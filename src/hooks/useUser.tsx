@@ -38,23 +38,35 @@ export const useUser = () => {
     mutationFn: async (profileData: Partial<UserProfile>) => {
       if (!clerkUser?.id) throw new Error('No user ID');
 
+      const profilePayload = {
+        id: clerkUser.id,
+        email: clerkUser.emailAddresses[0]?.emailAddress || '',
+        display_name: profileData.display_name || clerkUser.fullName || '',
+        avatar_url: profileData.avatar_url || clerkUser.imageUrl || '',
+        ...profileData,
+      };
+
+      // Use UPSERT to handle duplicate key scenarios
       const { data, error } = await supabase
         .from('profiles')
-        .insert({
-          id: clerkUser.id,
-          email: clerkUser.emailAddresses[0]?.emailAddress || '',
-          display_name: profileData.display_name || clerkUser.fullName || '',
-          avatar_url: profileData.avatar_url || clerkUser.imageUrl || '',
-          ...profileData,
+        .upsert(profilePayload, {
+          onConflict: 'id',
+          ignoreDuplicates: false
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile creation/update error:', error);
+        throw error;
+      }
       return data as UserProfile;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+    },
+    onError: (error) => {
+      console.warn('Failed to create/update profile:', error);
     },
   });
 
