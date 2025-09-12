@@ -18,24 +18,26 @@ export const useSocialAccountTokens = (accountId?: string) => {
     queryFn: async (): Promise<SocialAccountTokens | null> => {
       if (!accountId || !user?.id) return null;
 
-      const { data, error } = await supabase.rpc('get_social_account_tokens', {
-        account_id: accountId
-      });
+      // Query the social_accounts table directly for this specific account
+      // This will work because the RLS policy allows the user to see their own accounts
+      const { data, error } = await supabase
+        .from('social_accounts')
+        .select('access_token, refresh_token, token_expires_at')
+        .eq('id', accountId)
+        .single();
 
       if (error) {
         console.warn('Error fetching social account tokens');
         throw error;
       }
 
-      if (!data || !data.length) return null;
-
-      const tokenData = data[0];
+      if (!data) return null;
       
       // Decrypt tokens for use in the application
       return {
-        access_token: tokenData.access_token ? decryptToken(tokenData.access_token) : '',
-        refresh_token: tokenData.refresh_token ? decryptToken(tokenData.refresh_token) : undefined,
-        token_expires_at: tokenData.token_expires_at,
+        access_token: data.access_token ? decryptToken(data.access_token) : '',
+        refresh_token: data.refresh_token ? decryptToken(data.refresh_token) : undefined,
+        token_expires_at: data.token_expires_at,
       };
     },
     enabled: !!accountId && !!user?.id,

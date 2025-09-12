@@ -561,6 +561,23 @@ export type Database = {
         Args: { account_project_id: string }
         Returns: boolean
       }
+      get_safe_social_accounts: {
+        Args: { p_project_id: string }
+        Returns: {
+          account_id: string
+          account_username: string
+          connected_at: string
+          has_access_token: boolean
+          has_refresh_token: boolean
+          id: string
+          is_active: boolean
+          is_token_expired: boolean
+          platform: string
+          project_id: string
+          token_expires_at: string
+          updated_at: string
+        }[]
+      }
       is_profile_owner: {
         Args: { profile_user_id: string }
         Returns: boolean

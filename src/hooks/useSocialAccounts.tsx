@@ -34,24 +34,21 @@ export const useSocialAccounts = (projectId?: string) => {
   const { user } = useUser();
   const queryClient = useQueryClient();
 
-  // Fetch social accounts for a project using the safe view
+  // Fetch social accounts for a project using the secure function
   const { data: accounts = [], isLoading } = useQuery({
     queryKey: ['social-accounts', projectId],
     queryFn: async () => {
       if (!projectId || !user?.id) return [];
 
-      const { data, error } = await supabase
-        .from('social_accounts_safe')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('connected_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_safe_social_accounts', {
+        p_project_id: projectId
+      });
 
       if (error) {
         console.warn('Error fetching social accounts');
         throw error;
       }
 
-      // Return safe account data without sensitive tokens
       return data || [];
     },
     enabled: !!projectId && !!user?.id,
@@ -86,7 +83,21 @@ export const useSocialAccounts = (projectId?: string) => {
         access_type: 'create'
       });
 
-      return data as SocialAccount;
+      // Return a simplified response that matches our interface
+      return {
+        id: data.id,
+        project_id: data.project_id,
+        platform: data.platform,
+        account_id: data.account_id,
+        account_username: data.account_username,
+        has_access_token: !!data.access_token,
+        has_refresh_token: !!data.refresh_token,
+        token_expires_at: data.token_expires_at,
+        is_active: data.is_active,
+        connected_at: data.connected_at,
+        updated_at: data.updated_at,
+        is_token_expired: false, // Newly created tokens are not expired
+      } as SocialAccount;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['social-accounts'] });
@@ -141,7 +152,21 @@ export const useSocialAccounts = (projectId?: string) => {
         access_type: 'update'
       });
 
-      return data as SocialAccount;
+      // Return a simplified response that matches our interface
+      return {
+        id: data.id,
+        project_id: data.project_id,
+        platform: data.platform,
+        account_id: data.account_id,
+        account_username: data.account_username,
+        has_access_token: !!data.access_token,
+        has_refresh_token: !!data.refresh_token,
+        token_expires_at: data.token_expires_at,
+        is_active: data.is_active,
+        connected_at: data.connected_at,
+        updated_at: data.updated_at,
+        is_token_expired: data.token_expires_at ? new Date(data.token_expires_at) < new Date() : false,
+      } as SocialAccount;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['social-accounts'] });
