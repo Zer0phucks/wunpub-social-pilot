@@ -522,14 +522,52 @@ export type Database = {
           },
         ]
       }
+      token_access_log: {
+        Row: {
+          access_type: string
+          accessed_at: string | null
+          id: string
+          ip_address: unknown | null
+          social_account_id: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          access_type: string
+          accessed_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          social_account_id: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          access_type?: string
+          accessed_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          social_account_id?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      can_access_social_tokens: {
+        Args: { account_project_id: string }
+        Returns: boolean
+      }
       is_token_expired: {
         Args: { expires_at: string }
         Returns: boolean
+      }
+      log_token_access: {
+        Args: { access_type: string; account_id: string }
+        Returns: undefined
       }
     }
     Enums: {

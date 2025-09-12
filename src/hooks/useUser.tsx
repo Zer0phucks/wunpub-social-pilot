@@ -57,7 +57,7 @@ export const useUser = () => {
         .single();
 
       if (error) {
-        console.error('Profile creation/update error:', error);
+        console.warn('Profile creation/update failed');
         throw error;
       }
       return data as UserProfile;
@@ -65,8 +65,8 @@ export const useUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-profile'] });
     },
-    onError: (error) => {
-      console.warn('Failed to create/update profile:', error);
+    onError: () => {
+      console.warn('Failed to create/update profile');
     },
   });
 
@@ -92,8 +92,8 @@ export const useUser = () => {
   // Auto-create profile if user exists but no profile
   const { mutate: autoCreateProfile } = useMutation({
     mutationFn: createProfile.mutateAsync,
-    onError: (error) => {
-      console.warn('Failed to auto-create profile:', error);
+    onError: () => {
+      console.warn('Failed to auto-create profile');
     },
   });
 
