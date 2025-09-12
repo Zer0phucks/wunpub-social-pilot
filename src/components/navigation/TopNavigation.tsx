@@ -41,7 +41,7 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
   return (
     <header className="bg-surface-1 border-b border-border shadow-wun-sm">
       <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center space-x-8">
+        <div className="flex items-center space-x-8 flex-1">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">W</span>
@@ -49,7 +49,7 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
             <h1 className="text-xl font-bold text-foreground">WunPub</h1>
           </div>
           
-          <nav className="flex items-center space-x-1">
+          <nav className="flex items-center justify-between flex-1 max-w-2xl">
             {platforms.map((platform) => (
               <Button
                 key={platform.id}
