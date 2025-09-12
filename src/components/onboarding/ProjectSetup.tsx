@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useProjects } from '@/hooks/useProjects';
+import { useUser } from '@/hooks/useUser';
 import { useToast } from '@/components/ui/use-toast';
 import { Rocket, Target, Brain } from 'lucide-react';
 
@@ -22,10 +23,14 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
   });
 
   const { createProject, isCreating } = useProjects();
+  const { user, profile, isLoading: isUserLoading } = useUser();
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('Form submission started');
+    console.log('User state:', { user: !!user, profile: !!profile, isUserLoading });
     
     if (!formData.name.trim()) {
       toast({
@@ -36,6 +41,29 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
       return;
     }
 
+    // Check if user is properly authenticated
+    if (!user) {
+      console.error('User not authenticated during project creation');
+      toast({
+        title: 'Authentication required',
+        description: 'Please sign in to create a project.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Wait for user loading to complete
+    if (isUserLoading) {
+      console.log('User still loading, waiting...');
+      toast({
+        title: 'Please wait',
+        description: 'Preparing your account...',
+      });
+      return;
+    }
+
+    console.log('Creating project with form data:', formData);
+
     createProject(
       {
         ...formData,
@@ -43,6 +71,7 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
       },
       {
         onSuccess: (project) => {
+          console.log('Project creation successful:', project);
           toast({
             title: 'Project created!',
             description: 'Your WunPub project is ready to go.',
@@ -50,9 +79,22 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
           onComplete(project.id);
         },
         onError: (error) => {
+          console.error('Project creation failed:', error);
+          let errorMessage = 'An unexpected error occurred';
+          
+          if (error.message.includes('User not authenticated')) {
+            errorMessage = 'Please sign in to create a project';
+          } else if (error.message.includes('duplicate key')) {
+            errorMessage = 'A project with this name already exists';
+          } else if (error.message.includes('permission denied')) {
+            errorMessage = 'You do not have permission to create projects';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
           toast({
             title: 'Failed to create project',
-            description: error.message,
+            description: errorMessage,
             variant: 'destructive',
           });
         },
@@ -140,9 +182,12 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
               type="submit" 
               size="lg" 
               className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow-wun-brand"
-              disabled={isCreating}
+              disabled={isCreating || isUserLoading || !user}
             >
-              {isCreating ? 'Creating Project...' : 'Create Project & Continue'}
+              {isUserLoading ? 'Setting up your account...' : 
+               isCreating ? 'Creating Project...' : 
+               !user ? 'Please sign in...' : 
+               'Create Project & Continue'}
             </Button>
           </form>
         </CardContent>

@@ -100,7 +100,18 @@ export const useUser = () => {
   // Effect to create profile when needed
   // This uses useEffect to prevent infinite loops and only runs once
   useEffect(() => {
+    console.log('useUser effect:', {
+      clerkUser: !!clerkUser,
+      clerkUserId: clerkUser?.id,
+      isLoaded,
+      isProfileLoading,
+      profile: !!profile,
+      isPending: createProfile.isPending,
+      isError: createProfile.isError
+    });
+    
     if (clerkUser && isLoaded && !isProfileLoading && !profile && !createProfile.isPending && !createProfile.isError) {
+      console.log('Auto-creating profile for user:', clerkUser.id);
       autoCreateProfile({});
     }
   }, [clerkUser?.id, isLoaded, isProfileLoading, profile, createProfile.isPending, createProfile.isError]);

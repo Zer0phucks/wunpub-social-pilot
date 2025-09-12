@@ -37,8 +37,16 @@ export const useProjects = () => {
 
   const createProject = useMutation({
     mutationFn: async (projectData: Omit<Project, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-      if (!user?.id) throw new Error('No user ID');
+      console.log('Creating project with data:', projectData);
+      console.log('User object:', user);
+      
+      if (!user?.id) {
+        console.error('No user ID available for project creation');
+        throw new Error('User not authenticated. Please sign in to create a project.');
+      }
 
+      console.log('Inserting project with user_id:', user.id);
+      
       const { data, error } = await supabase
         .from('projects')
         .insert({
@@ -48,7 +56,12 @@ export const useProjects = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase project creation error:', error);
+        throw error;
+      }
+      
+      console.log('Project created successfully:', data);
       return data as Project;
     },
     onSuccess: () => {
