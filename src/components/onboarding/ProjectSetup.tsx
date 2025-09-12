@@ -113,6 +113,14 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
           <CardDescription>
             Set up your social media marketing project to get started with WunPub
           </CardDescription>
+          {/* Debug info */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-muted-foreground mt-2 p-2 bg-muted rounded">
+              Debug: User={user?.id ? 'authenticated' : 'not authenticated'}, 
+              Profile={profile?.id ? 'exists' : 'missing'}, 
+              Loading={isUserLoading ? 'yes' : 'no'}
+            </div>
+          )}
         </CardHeader>
         
         <CardContent>

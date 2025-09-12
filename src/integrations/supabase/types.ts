@@ -561,6 +561,10 @@ export type Database = {
         Args: { account_project_id: string }
         Returns: boolean
       }
+      can_create_project: {
+        Args: { user_identifier: string }
+        Returns: boolean
+      }
       get_safe_social_accounts: {
         Args: { p_project_id: string }
         Returns: {
