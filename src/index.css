@@ -18,7 +18,7 @@ All colors MUST be HSL.
     --popover: 210 15% 9%;
     --popover-foreground: 210 10% 90%;
 
-    --primary: 0 73% 41%;
+    --primary: 150 100% 39%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 15% 15%;
@@ -27,7 +27,7 @@ All colors MUST be HSL.
     --muted: 210 15% 15%;
     --muted-foreground: 210 10% 60%;
 
-    --accent: 0 73% 41%;
+    --accent: 150 100% 39%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
@@ -35,12 +35,12 @@ All colors MUST be HSL.
 
     --border: 210 15% 20%;
     --input: 210 15% 15%;
-    --ring: 0 73% 41%;
+    --ring: 150 100% 39%;
 
     /* WunPub Design System */
-    --brand-primary: 0 73% 41%;
-    --brand-gradient: linear-gradient(135deg, hsl(0 73% 41%), hsl(120 73% 35%));
-    --brand-gradient-subtle: linear-gradient(135deg, hsl(0 73% 15%), hsl(120 73% 12%));
+    --brand-primary: 150 100% 39%;
+    --brand-gradient: linear-gradient(135deg, hsl(150 100% 39%), hsl(160 100% 35%));
+    --brand-gradient-subtle: linear-gradient(135deg, hsl(150 100% 15%), hsl(160 100% 12%));
     
     /* Platform Colors */
     --reddit: 16 100% 55%;
@@ -62,7 +62,7 @@ All colors MUST be HSL.
     --shadow-sm: 0 1px 2px 0 hsl(210 15% 5% / 0.15);
     --shadow-md: 0 4px 6px -1px hsl(210 15% 5% / 0.2), 0 2px 4px -1px hsl(210 15% 5% / 0.1);
     --shadow-lg: 0 10px 15px -3px hsl(210 15% 5% / 0.2), 0 4px 6px -2px hsl(210 15% 5% / 0.1);
-    --shadow-brand: 0 10px 25px -5px hsl(0 73% 41% / 0.25);
+    --shadow-brand: 0 10px 25px -5px hsl(150 100% 39% / 0.25);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -72,12 +72,12 @@ All colors MUST be HSL.
 
     --sidebar-background: 210 15% 9%;
     --sidebar-foreground: 210 10% 90%;
-    --sidebar-primary: 0 73% 41%;
+    --sidebar-primary: 150 100% 39%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 15% 15%;
     --sidebar-accent-foreground: 210 10% 90%;
     --sidebar-border: 210 15% 20%;
-    --sidebar-ring: 0 73% 41%;
+    --sidebar-ring: 150 100% 39%;
   }
 
   .light {
@@ -91,7 +91,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 224 15% 25%;
 
-    --primary: 0 73% 41%;
+    --primary: 150 100% 39%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 6% 96%;
@@ -100,7 +100,7 @@ All colors MUST be HSL.
     --muted: 240 6% 96%;
     --muted-foreground: 215 25% 54%;
 
-    --accent: 0 73% 41%;
+    --accent: 150 100% 39%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -108,15 +108,15 @@ All colors MUST be HSL.
 
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 0 73% 41%;
+    --ring: 150 100% 39%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 0 73% 41%;
+    --sidebar-primary: 150 100% 39%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 0 73% 41%;
+    --sidebar-ring: 150 100% 39%;
   }
 }
 
