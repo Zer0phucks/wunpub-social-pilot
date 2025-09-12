@@ -2,6 +2,7 @@ import { WunPubLayout } from '@/components/WunPubLayout';
 import { HomePage } from '@/components/dashboard/HomePage';
 import { PostCreator } from '@/components/posts/PostCreator';
 import { PostsList } from '@/components/posts/PostsList';
+import { Inbox } from '@/components/inbox/Inbox';
 
 interface IndexProps {
   selectedPage?: string;
@@ -24,7 +25,7 @@ const MainContent = ({ selectedPage, selectedProjectId }: IndexProps) => {
     case 'feed':
       return <PostsList selectedProjectId={selectedProjectId} />;
     case 'inbox':
-      return <div>Inbox coming soon...</div>;
+      return <Inbox selectedProjectId={selectedProjectId} />;
     case 'calendar':
       return <div>Calendar coming soon...</div>;
     case 'templates':
