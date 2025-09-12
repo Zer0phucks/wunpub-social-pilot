@@ -57,7 +57,7 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
                 size="sm"
                 onClick={() => onPlatformChange(platform.id)}
                 className={`
-                  flex items-center space-x-2 px-4 py-2 h-10 transition-all duration-200
+                  flex items-center justify-center w-10 h-10 transition-all duration-200
                   ${selectedPlatform === platform.id 
                     ? 'bg-brand text-brand-foreground shadow-wun-brand' 
                     : 'hover:bg-surface-2 text-muted-foreground hover:text-foreground'
@@ -65,7 +65,6 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
                 `}
               >
                 <platform.logo />
-                <span className="font-medium">{platform.name}</span>
               </Button>
             ))}
           </nav>
