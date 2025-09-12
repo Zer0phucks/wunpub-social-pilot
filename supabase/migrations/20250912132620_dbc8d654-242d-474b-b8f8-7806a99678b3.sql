@@ -1,0 +1,20 @@
+-- Drop ALL policies across all tables that might reference user_id
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view their own projects" ON public.projects;
+DROP POLICY IF EXISTS "Users can create their own projects" ON public.projects;
+DROP POLICY IF EXISTS "Users can update their own projects" ON public.projects;
+DROP POLICY IF EXISTS "Users can delete their own projects" ON public.projects;
+DROP POLICY IF EXISTS "Users can manage social accounts for their projects" ON public.social_accounts;
+DROP POLICY IF EXISTS "Users can manage communities for their projects" ON public.communities;
+DROP POLICY IF EXISTS "Users can view monitored posts for their communities" ON public.monitored_posts;
+DROP POLICY IF EXISTS "Users can update monitored posts for their communities" ON public.monitored_posts;
+DROP POLICY IF EXISTS "Users can manage posts for their projects" ON public.posts;
+DROP POLICY IF EXISTS "Users can manage post versions for their posts" ON public.post_versions;
+DROP POLICY IF EXISTS "Users can view templates for their projects" ON public.templates;
+DROP POLICY IF EXISTS "Users can create templates for their projects" ON public.templates;
+DROP POLICY IF EXISTS "Users can update their own templates" ON public.templates;
+DROP POLICY IF EXISTS "Users can delete their own templates" ON public.templates;
+DROP POLICY IF EXISTS "Users can manage messages for their projects" ON public.messages;
+DROP POLICY IF EXISTS "Users can view analytics for their projects" ON public.analytics_snapshots;
