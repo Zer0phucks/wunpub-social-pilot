@@ -561,6 +561,10 @@ export type Database = {
         Args: { account_project_id: string }
         Returns: boolean
       }
+      is_profile_owner: {
+        Args: { profile_user_id: string }
+        Returns: boolean
+      }
       is_token_expired: {
         Args: { expires_at: string }
         Returns: boolean
