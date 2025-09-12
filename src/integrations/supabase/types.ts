@@ -14,7 +14,514 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analytics_snapshots: {
+        Row: {
+          clicks: number | null
+          created_at: string
+          engagement_rate: number | null
+          followers_count: number | null
+          following_count: number | null
+          id: string
+          impressions: number | null
+          platform: string
+          posts_count: number | null
+          project_id: string
+          reach: number | null
+          snapshot_date: string
+        }
+        Insert: {
+          clicks?: number | null
+          created_at?: string
+          engagement_rate?: number | null
+          followers_count?: number | null
+          following_count?: number | null
+          id?: string
+          impressions?: number | null
+          platform: string
+          posts_count?: number | null
+          project_id: string
+          reach?: number | null
+          snapshot_date: string
+        }
+        Update: {
+          clicks?: number | null
+          created_at?: string
+          engagement_rate?: number | null
+          followers_count?: number | null
+          following_count?: number | null
+          id?: string
+          impressions?: number | null
+          platform?: string
+          posts_count?: number | null
+          project_id?: string
+          reach?: number | null
+          snapshot_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_snapshots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      communities: {
+        Row: {
+          added_at: string
+          community_id: string
+          community_name: string
+          community_url: string | null
+          id: string
+          is_monitoring: boolean | null
+          platform: string
+          project_id: string
+          relevance_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          added_at?: string
+          community_id: string
+          community_name: string
+          community_url?: string | null
+          id?: string
+          is_monitoring?: boolean | null
+          platform: string
+          project_id: string
+          relevance_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          added_at?: string
+          community_id?: string
+          community_name?: string
+          community_url?: string | null
+          id?: string
+          is_monitoring?: boolean | null
+          platform?: string
+          project_id?: string
+          relevance_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "communities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          id: string
+          is_read: boolean | null
+          is_replied: boolean | null
+          message_type: string
+          message_url: string | null
+          platform: string
+          platform_message_id: string
+          project_id: string
+          received_at: string
+          recipient_username: string | null
+          replied_at: string | null
+          sender_id: string
+          sender_username: string
+          thread_id: string | null
+        }
+        Insert: {
+          content: string
+          id?: string
+          is_read?: boolean | null
+          is_replied?: boolean | null
+          message_type: string
+          message_url?: string | null
+          platform: string
+          platform_message_id: string
+          project_id: string
+          received_at?: string
+          recipient_username?: string | null
+          replied_at?: string | null
+          sender_id: string
+          sender_username: string
+          thread_id?: string | null
+        }
+        Update: {
+          content?: string
+          id?: string
+          is_read?: boolean | null
+          is_replied?: boolean | null
+          message_type?: string
+          message_url?: string | null
+          platform?: string
+          platform_message_id?: string
+          project_id?: string
+          received_at?: string
+          recipient_username?: string | null
+          replied_at?: string | null
+          sender_id?: string
+          sender_username?: string
+          thread_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      monitored_posts: {
+        Row: {
+          author_id: string | null
+          author_username: string | null
+          community_id: string
+          content: string | null
+          discovered_at: string
+          engagement_count: number | null
+          id: string
+          is_read: boolean | null
+          platform_post_id: string
+          post_url: string | null
+          posted_at: string | null
+          relevance_score: number | null
+          title: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          author_username?: string | null
+          community_id: string
+          content?: string | null
+          discovered_at?: string
+          engagement_count?: number | null
+          id?: string
+          is_read?: boolean | null
+          platform_post_id: string
+          post_url?: string | null
+          posted_at?: string | null
+          relevance_score?: number | null
+          title?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          author_username?: string | null
+          community_id?: string
+          content?: string | null
+          discovered_at?: string
+          engagement_count?: number | null
+          id?: string
+          is_read?: boolean | null
+          platform_post_id?: string
+          post_url?: string | null
+          posted_at?: string | null
+          relevance_score?: number | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monitored_posts_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_versions: {
+        Row: {
+          character_count: number | null
+          content: string
+          created_at: string
+          engagement_metrics: Json | null
+          id: string
+          media_urls: string[] | null
+          platform: string
+          platform_post_id: string | null
+          platform_url: string | null
+          post_id: string
+          published_at: string | null
+        }
+        Insert: {
+          character_count?: number | null
+          content: string
+          created_at?: string
+          engagement_metrics?: Json | null
+          id?: string
+          media_urls?: string[] | null
+          platform: string
+          platform_post_id?: string | null
+          platform_url?: string | null
+          post_id: string
+          published_at?: string | null
+        }
+        Update: {
+          character_count?: number | null
+          content?: string
+          created_at?: string
+          engagement_metrics?: Json | null
+          id?: string
+          media_urls?: string[] | null
+          platform?: string
+          platform_post_id?: string | null
+          platform_url?: string | null
+          post_id?: string
+          published_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_versions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          ai_generated: boolean | null
+          content: string | null
+          created_at: string
+          id: string
+          media_urls: string[] | null
+          platforms: string[]
+          project_id: string
+          published_at: string | null
+          scheduled_at: string | null
+          status: string | null
+          template_id: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          media_urls?: string[] | null
+          platforms?: string[]
+          project_id: string
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string | null
+          template_id?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          media_urls?: string[] | null
+          platforms?: string[]
+          project_id?: string
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string | null
+          template_id?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_posts_template"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string
+          id: string
+          subscription_tier: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email: string
+          id: string
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string
+          id?: string
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          ai_enabled: boolean | null
+          ai_tone: string | null
+          created_at: string
+          description: string | null
+          id: string
+          marketing_goal: string | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_enabled?: boolean | null
+          ai_tone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          marketing_goal?: string | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_enabled?: boolean | null
+          ai_tone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          marketing_goal?: string | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_accounts: {
+        Row: {
+          access_token: string
+          account_id: string
+          account_username: string
+          connected_at: string
+          id: string
+          is_active: boolean | null
+          platform: string
+          project_id: string
+          refresh_token: string | null
+          token_expires_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          account_id: string
+          account_username: string
+          connected_at?: string
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          project_id: string
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          account_id?: string
+          account_username?: string
+          connected_at?: string
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          project_id?: string
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_accounts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      templates: {
+        Row: {
+          content: string
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          platforms: string[]
+          project_id: string
+          tags: string[] | null
+          updated_at: string
+          usage_count: number | null
+          variables: string[] | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          platforms?: string[]
+          project_id: string
+          tags?: string[] | null
+          updated_at?: string
+          usage_count?: number | null
+          variables?: string[] | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          platforms?: string[]
+          project_id?: string
+          tags?: string[] | null
+          updated_at?: string
+          usage_count?: number | null
+          variables?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
