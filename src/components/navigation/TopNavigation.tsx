@@ -1,3 +1,4 @@
+import { UserButton } from '@clerk/clerk-react';
 import { Platform } from '../WunPubLayout';
 import { Button } from '@/components/ui/button';
 
@@ -56,7 +57,14 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
           >
             Connect Platform
           </Button>
-          <div className="w-8 h-8 rounded-full bg-brand-gradient-subtle border-2 border-brand"></div>
+          <UserButton 
+            afterSignOutUrl="/auth"
+            appearance={{
+              elements: {
+                avatarBox: "w-8 h-8"
+              }
+            }}
+          />
         </div>
       </div>
     </header>
