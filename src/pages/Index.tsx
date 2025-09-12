@@ -4,6 +4,7 @@ import { PostCreator } from '@/components/posts/PostCreator';
 import { PostsList } from '@/components/posts/PostsList';
 import { Inbox } from '@/components/inbox/Inbox';
 import { ContentCalendar } from '@/components/calendar/ContentCalendar';
+import { TemplateLibrary } from '@/components/templates/TemplateLibrary';
 
 interface IndexProps {
   selectedPage?: string;
@@ -30,7 +31,7 @@ const MainContent = ({ selectedPage, selectedProjectId }: IndexProps) => {
     case 'calendar':
       return <ContentCalendar selectedProjectId={selectedProjectId} />;
     case 'templates':
-      return <div>Templates coming soon...</div>;
+      return <TemplateLibrary selectedProjectId={selectedProjectId} />;
     default:
       return <HomePage />;
   }
