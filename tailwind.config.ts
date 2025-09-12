@@ -47,6 +47,26 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // WunPub Design System
+        brand: {
+          DEFAULT: "hsl(var(--brand-primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        // Platform Colors
+        reddit: "hsl(var(--reddit))",
+        twitter: "hsl(var(--twitter))",
+        facebook: "hsl(var(--facebook))",
+        linkedin: "hsl(var(--linkedin))",
+        // Status Colors
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        info: "hsl(var(--info))",
+        // Surface Colors
+        surface: {
+          1: "hsl(var(--surface-1))",
+          2: "hsl(var(--surface-2))",
+          3: "hsl(var(--surface-3))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -80,10 +100,35 @@ export default {
             height: "0",
           },
         },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        },
+        "slide-in": {
+          "0%": { transform: "translateX(-10px)", opacity: "0" },
+          "100%": { transform: "translateX(0)", opacity: "1" }
+        },
+        "bounce-gentle": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-2px)" }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.3s ease-out",
+        "slide-in": "slide-in 0.3s ease-out",
+        "bounce-gentle": "bounce-gentle 2s ease-in-out infinite"
+      },
+      backgroundImage: {
+        'brand-gradient': 'var(--brand-gradient)',
+        'brand-gradient-subtle': 'var(--brand-gradient-subtle)',
+      },
+      boxShadow: {
+        'wun-sm': 'var(--shadow-sm)',
+        'wun-md': 'var(--shadow-md)',
+        'wun-lg': 'var(--shadow-lg)',
+        'wun-brand': 'var(--shadow-brand)',
       },
     },
   },
