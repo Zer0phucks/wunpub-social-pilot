@@ -10,12 +10,13 @@ export interface SocialAccount {
   platform: string;
   account_id: string;
   account_username: string;
-  access_token: string;
-  refresh_token?: string;
+  has_access_token: boolean;
+  has_refresh_token: boolean;
   token_expires_at?: string;
   is_active: boolean;
   connected_at: string;
   updated_at: string;
+  is_token_expired: boolean;
 }
 
 export interface CreateSocialAccountData {
@@ -33,14 +34,14 @@ export const useSocialAccounts = (projectId?: string) => {
   const { user } = useUser();
   const queryClient = useQueryClient();
 
-  // Fetch social accounts for a project
+  // Fetch social accounts for a project using the safe view
   const { data: accounts = [], isLoading } = useQuery({
     queryKey: ['social-accounts', projectId],
     queryFn: async () => {
       if (!projectId || !user?.id) return [];
 
       const { data, error } = await supabase
-        .from('social_accounts')
+        .from('social_accounts_safe')
         .select('*')
         .eq('project_id', projectId)
         .order('connected_at', { ascending: false });
@@ -50,12 +51,8 @@ export const useSocialAccounts = (projectId?: string) => {
         throw error;
       }
 
-      // Decrypt tokens for use in the application
-      return (data as SocialAccount[]).map(account => ({
-        ...account,
-        access_token: account.access_token ? decryptToken(account.access_token) : '',
-        refresh_token: account.refresh_token ? decryptToken(account.refresh_token) : undefined,
-      }));
+      // Return safe account data without sensitive tokens
+      return data || [];
     },
     enabled: !!projectId && !!user?.id,
   });
