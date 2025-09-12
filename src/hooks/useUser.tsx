@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useUser as useClerkUser } from '@clerk/clerk-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -85,9 +86,12 @@ export const useUser = () => {
   });
 
   // Effect to create profile when needed
-  if (clerkUser && isLoaded && !isProfileLoading && !profile && !createProfile.isPending) {
-    autoCreateProfile({});
-  }
+  // This uses useEffect to prevent infinite loops and only runs once
+  useEffect(() => {
+    if (clerkUser && isLoaded && !isProfileLoading && !profile && !createProfile.isPending && !createProfile.isError) {
+      autoCreateProfile({});
+    }
+  }, [clerkUser?.id, isLoaded, isProfileLoading, profile, createProfile.isPending, createProfile.isError]);
 
   return {
     user: clerkUser,
