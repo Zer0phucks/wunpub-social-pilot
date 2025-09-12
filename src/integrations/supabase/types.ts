@@ -527,7 +527,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_token_expired: {
+        Args: { expires_at: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
