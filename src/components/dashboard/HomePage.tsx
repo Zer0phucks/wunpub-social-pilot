@@ -1,6 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PerformanceChart } from '@/components/analytics/PerformanceChart';
+import { EngagementInsights } from '@/components/analytics/EngagementInsights';
+import { GrowthTracker } from '@/components/analytics/GrowthTracker';
+import { ActivityFeed } from '@/components/analytics/ActivityFeed';
 import { 
   TrendingUp, 
   Users, 
@@ -10,7 +15,10 @@ import {
   ArrowUpRight,
   PenTool,
   Inbox,
-  Clock
+  Clock,
+  BarChart3,
+  Target,
+  Activity
 } from 'lucide-react';
 
 // Platform logo components
@@ -108,8 +116,8 @@ export function HomePage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Good morning!</h1>
-          <p className="text-muted-foreground mt-2">Here's what's happening with your social media presence.</p>
+          <h1 className="text-3xl font-bold text-foreground">Analytics Dashboard</h1>
+          <p className="text-muted-foreground mt-2">Comprehensive insights into your social media performance.</p>
         </div>
         
         <Button className="bg-brand-gradient hover:shadow-wun-brand transition-all duration-300">
@@ -118,7 +126,7 @@ export function HomePage() {
         </Button>
       </div>
 
-      {/* Metrics Grid */}
+      {/* Key Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric) => (
           <Card key={metric.title} className="hover:shadow-wun-md transition-shadow duration-200">
@@ -150,104 +158,123 @@ export function HomePage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Content Suggestions */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Sparkles className="w-5 h-5 mr-2 text-brand" />
-              Content Suggestions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {contentSuggestions.map((suggestion, index) => (
-              <div 
-                key={index} 
-                className="p-4 rounded-lg border border-border hover:bg-surface-2 transition-colors duration-200 cursor-pointer group"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <suggestion.logo />
-                      <h4 className="font-medium text-foreground group-hover:text-brand transition-colors">
-                        {suggestion.title}
-                      </h4>
-                      <Badge variant="outline" className="text-xs flex items-center space-x-1">
-                        <suggestion.logo />
-                        <span>{suggestion.platform}</span>
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{suggestion.description}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs text-muted-foreground">
-                      {suggestion.confidence}% match
-                    </div>
-                    <div className={`w-2 h-2 rounded-full ${suggestion.confidence > 90 ? 'bg-success' : 'bg-warning'}`}></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+      {/* Analytics Tabs */}
+      <Tabs defaultValue="performance" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="performance" className="flex items-center space-x-2">
+            <BarChart3 className="w-4 h-4" />
+            <span>Performance</span>
+          </TabsTrigger>
+          <TabsTrigger value="engagement" className="flex items-center space-x-2">
+            <MessageCircle className="w-4 h-4" />
+            <span>Engagement</span>
+          </TabsTrigger>
+          <TabsTrigger value="growth" className="flex items-center space-x-2">
+            <Target className="w-4 h-4" />
+            <span>Growth</span>
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="flex items-center space-x-2">
+            <Activity className="w-4 h-4" />
+            <span>Activity</span>
+          </TabsTrigger>
+        </TabsList>
 
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {quickActions.map((action) => (
-              <Button
-                key={action.name}
-                variant="ghost"
-                className="w-full justify-start h-12 hover:bg-surface-2 transition-colors duration-200"
-              >
-                <action.icon className={`w-5 h-5 mr-3 text-${action.color}`} />
-                {action.name}
-              </Button>
-            ))}
-            
-            <div className="pt-4 border-t border-border">
-              <div className="text-xs font-medium text-muted-foreground mb-2">RECENT ACTIVITY</div>
-              <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                  <Clock className="w-3 h-3 mr-2 text-muted-foreground" />
-                  <span className="text-muted-foreground">Posted to LinkedIn</span>
-                  <span className="ml-auto text-xs text-muted-foreground">2h ago</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <Clock className="w-3 h-3 mr-2 text-muted-foreground" />
-                  <span className="text-muted-foreground">New message from Twitter</span>
-                  <span className="ml-auto text-xs text-muted-foreground">4h ago</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="performance" className="space-y-6">
+          <PerformanceChart />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Sparkles className="w-5 h-5 mr-2 text-brand" />
+                  Content Suggestions
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {contentSuggestions.map((suggestion, index) => (
+                  <div 
+                    key={index} 
+                    className="p-4 rounded-lg border border-border hover:bg-surface-2 transition-colors duration-200 cursor-pointer group"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <suggestion.logo />
+                          <h4 className="font-medium text-foreground group-hover:text-brand transition-colors">
+                            {suggestion.title}
+                          </h4>
+                          <Badge variant="outline" className="text-xs flex items-center space-x-1">
+                            <suggestion.logo />
+                            <span>{suggestion.platform}</span>
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{suggestion.description}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-xs text-muted-foreground">
+                          {suggestion.confidence}% match
+                        </div>
+                        <div className={`w-2 h-2 rounded-full ${suggestion.confidence > 90 ? 'bg-success' : 'bg-warning'}`}></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
-      {/* Performance Insights */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {quickActions.map((action) => (
+                  <Button
+                    key={action.name}
+                    variant="ghost"
+                    className="w-full justify-start h-12 hover:bg-surface-2 transition-colors duration-200"
+                  >
+                    <action.icon className={`w-5 h-5 mr-3 text-${action.color}`} />
+                    {action.name}
+                  </Button>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="engagement">
+          <EngagementInsights />
+        </TabsContent>
+
+        <TabsContent value="growth">
+          <GrowthTracker />
+        </TabsContent>
+
+        <TabsContent value="activity">
+          <ActivityFeed />
+        </TabsContent>
+      </Tabs>
+
+      {/* Performance Insights Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>Performance Insights</CardTitle>
+          <CardTitle>Quick Insights</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
+            <div className="text-center p-4 rounded-lg bg-brand/5 border border-brand/20">
               <div className="text-2xl font-bold text-brand mb-2">Best Time</div>
               <div className="text-sm text-muted-foreground">Tuesday 2-4 PM</div>
               <div className="text-xs text-muted-foreground mt-1">+23% engagement</div>
             </div>
-            <div className="text-center">
+            <div className="text-center p-4 rounded-lg bg-success/5 border border-success/20">
               <div className="text-2xl font-bold text-success mb-2">Top Platform</div>
               <div className="text-sm text-muted-foreground">LinkedIn</div>
               <div className="text-xs text-muted-foreground mt-1">4.8% avg rate</div>
             </div>
-            <div className="text-center">
+            <div className="text-center p-4 rounded-lg bg-warning/5 border border-warning/20">
               <div className="text-2xl font-bold text-warning mb-2">Trending</div>
               <div className="text-sm text-muted-foreground">#AITools</div>
-              <div className="text-xs text-muted-foreground mt-1">Convert 2 posts to templates</div>
+              <div className="text-xs text-muted-foreground mt-1">High conversion potential</div>
             </div>
           </div>
         </CardContent>
