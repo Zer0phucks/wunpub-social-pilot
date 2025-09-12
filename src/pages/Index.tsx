@@ -3,6 +3,7 @@ import { HomePage } from '@/components/dashboard/HomePage';
 import { PostCreator } from '@/components/posts/PostCreator';
 import { PostsList } from '@/components/posts/PostsList';
 import { Inbox } from '@/components/inbox/Inbox';
+import { ContentCalendar } from '@/components/calendar/ContentCalendar';
 
 interface IndexProps {
   selectedPage?: string;
@@ -27,7 +28,7 @@ const MainContent = ({ selectedPage, selectedProjectId }: IndexProps) => {
     case 'inbox':
       return <Inbox selectedProjectId={selectedProjectId} />;
     case 'calendar':
-      return <div>Calendar coming soon...</div>;
+      return <ContentCalendar selectedProjectId={selectedProjectId} />;
     case 'templates':
       return <div>Templates coming soon...</div>;
     default:
