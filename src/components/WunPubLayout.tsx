@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { TopNavigation } from './navigation/TopNavigation';
 import { SideNavigation } from './navigation/SideNavigation';
 import { ProjectSetup } from './onboarding/ProjectSetup';
@@ -91,7 +92,11 @@ export function WunPubLayout({ children }: WunPubLayoutProps) {
         />
         
         <main className="flex-1 p-6">
-          {children}
+          {React.cloneElement(children as React.ReactElement, { 
+            selectedPage,
+            selectedPlatform,
+            selectedProjectId 
+          })}
         </main>
       </div>
     </div>
