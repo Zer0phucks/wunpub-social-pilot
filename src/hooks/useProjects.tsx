@@ -110,5 +110,8 @@ export const useProjects = () => {
     isCreating: createProject.isPending,
     isUpdating: updateProject.isPending,
     isDeleting: deleteProject.isPending,
+    createProjectAsync: createProject.mutateAsync,
+    updateProjectAsync: updateProject.mutateAsync,
+    deleteProjectAsync: deleteProject.mutateAsync,
   };
 };
