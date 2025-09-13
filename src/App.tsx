@@ -3,39 +3,31 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
-import { useEffect } from "react";
-import { SupabaseProvider } from "@/integrations/supabase/SupabaseProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
+import { useUser } from "@/hooks/useUser";
 
 const queryClient = new QueryClient();
 
 const App = () => {
+  const { user, isLoading } = useUser();
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <SupabaseProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="dark" storageKey="wunpub-ui-theme">
           <TooltipProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
               <Routes>
-                <Route 
-                  path="/" 
-                  element={
-                    <>
-                      <SignedIn>
-                        <Index />
-                      </SignedIn>
-                      <SignedOut>
-                        <Auth />
-                      </SignedOut>
-                    </>
-                  } 
+                <Route
+                  path="/"
+                  element={isLoading ? null : user ? <Index /> : <Auth />}
                 />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/settings" element={<Settings />} />
@@ -45,8 +37,8 @@ const App = () => {
             </BrowserRouter>
           </TooltipProvider>
         </ThemeProvider>
-      </SupabaseProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

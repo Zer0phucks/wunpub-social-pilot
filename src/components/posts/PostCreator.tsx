@@ -116,7 +116,6 @@ export function PostCreator() {
 
       setMediaUrls(prev => [...prev, publicUrl]);
     } catch (error) {
-      console.error('Error uploading file:', error);
       toast({
         title: "Error",
         description: "Failed to upload file. Please try again.",
@@ -212,7 +211,6 @@ ${aiTone === 'professional'
       setIsScheduled(false);
 
     } catch (error) {
-      console.error('Error saving draft:', error);
       toast({
         title: "Error",
         description: "Failed to save draft. Please try again.",
@@ -272,7 +270,6 @@ ${aiTone === 'professional'
       setIsScheduled(false);
 
     } catch (error) {
-      console.error('Error publishing post:', error);
       toast({
         title: "Error",
         description: "Failed to publish post. Please try again.",
@@ -440,7 +437,7 @@ ${aiTone === 'professional'
             <CardContent>
               <div>
                 <Label>Tone</Label>
-                <Select value={aiTone} onValueChange={(value: any) => setAiTone(value)}>
+                <Select value={aiTone} onValueChange={(value: 'professional' | 'casual' | 'humorous') => setAiTone(value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

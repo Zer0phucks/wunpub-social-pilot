@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { useUser as useClerkUser } from '@clerk/clerk-react';
+import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
+import type { User } from '@supabase/supabase-js';
 
 export interface UserProfile {
   id: string;
@@ -15,50 +15,68 @@ export interface UserProfile {
 
 export const useUser = () => {
   const supabase = useSupabase();
-  const { user: clerkUser, isLoaded } = useClerkUser();
   const queryClient = useQueryClient();
+  const [authUser, setAuthUser] = useState<User | null>(null);
+  const [authLoaded, setAuthLoaded] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      setAuthUser(data.user ?? null);
+      setAuthLoaded(true);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthUser(session?.user ?? null);
+    });
+
+    return () => {
+      mounted = false;
+      listener.subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   const { data: profile, isLoading: isProfileLoading } = useQuery({
-    queryKey: ['user-profile', clerkUser?.id],
+    queryKey: ['user-profile', authUser?.id],
     queryFn: async () => {
-      if (!clerkUser?.id) return null;
-      
+      if (!authUser?.id) return null;
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', clerkUser.id)
+        .eq('id', authUser.id)
         .maybeSingle();
 
       if (error) throw error;
       return data as UserProfile | null;
     },
-    enabled: !!clerkUser?.id && isLoaded,
+    enabled: !!authUser?.id && authLoaded,
   });
 
   const createProfile = useMutation({
     mutationFn: async (profileData: Partial<UserProfile>) => {
-      if (!clerkUser?.id) throw new Error('No user ID');
+      if (!authUser?.id) throw new Error('No user ID');
 
       const profilePayload = {
-        id: clerkUser.id,
-        email: clerkUser.emailAddresses[0]?.emailAddress || '',
-        display_name: profileData.display_name || clerkUser.fullName || '',
-        avatar_url: profileData.avatar_url || clerkUser.imageUrl || '',
+        id: authUser.id,
+        email: authUser.email ?? '',
+        display_name: profileData.display_name || (authUser.user_metadata?.full_name as string) || '',
+        avatar_url: profileData.avatar_url || (authUser.user_metadata?.avatar_url as string) || '',
         ...profileData,
       };
 
-      // Use UPSERT to handle duplicate key scenarios
       const { data, error } = await supabase
         .from('profiles')
         .upsert(profilePayload, {
           onConflict: 'id',
-          ignoreDuplicates: false
+          ignoreDuplicates: false,
         })
         .select()
         .single();
 
       if (error) {
-        console.warn('Profile creation/update failed');
         throw error;
       }
       return data as UserProfile;
@@ -66,19 +84,16 @@ export const useUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-profile'] });
     },
-    onError: () => {
-      console.warn('Failed to create/update profile');
-    },
   });
 
   const updateProfile = useMutation({
     mutationFn: async (updates: Partial<UserProfile>) => {
-      if (!clerkUser?.id) throw new Error('No user ID');
+      if (!authUser?.id) throw new Error('No user ID');
 
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('id', clerkUser.id)
+        .eq('id', authUser.id)
         .select()
         .single();
 
@@ -95,18 +110,23 @@ export const useUser = () => {
     mutationFn: createProfile.mutateAsync,
   });
 
-  // Effect to create profile when needed
-  // This uses useEffect to prevent infinite loops and only runs once
   useEffect(() => {
-    if (clerkUser && isLoaded && !isProfileLoading && !profile && !createProfile.isPending && !createProfile.isError) {
+    if (
+      authUser &&
+      authLoaded &&
+      !isProfileLoading &&
+      !profile &&
+      !createProfile.isPending &&
+      !createProfile.isError
+    ) {
       autoCreateProfile({});
     }
-  }, [clerkUser?.id, isLoaded, isProfileLoading, profile, createProfile.isPending, createProfile.isError]);
+  }, [authUser?.id, authLoaded, isProfileLoading, profile, createProfile.isPending, createProfile.isError, autoCreateProfile]);
 
   return {
-    user: clerkUser,
+    user: authUser,
     profile,
-    isLoading: !isLoaded || isProfileLoading || createProfile.isPending,
+    isLoading: !authLoaded || isProfileLoading || createProfile.isPending,
     createProfile: createProfile.mutate,
     updateProfile: updateProfile.mutate,
     isCreatingProfile: createProfile.isPending,

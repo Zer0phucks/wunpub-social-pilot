@@ -1,4 +1,3 @@
-import { UserButton } from '@clerk/clerk-react';
 import { Platform } from '../WunPubLayout';
 import { Button } from '@/components/ui/button';
 import { Globe } from 'lucide-react';
@@ -7,6 +6,8 @@ import redditLogo from '@/assets/reddit-logo.png';
 import xLogo from '@/assets/x-logo.png';
 import linkedinLogo from '@/assets/linkedin-logo.png';
 import facebookLogo from '@/assets/facebook-logo.png';
+import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
+import { useNavigate } from 'react-router-dom';
 
 // Platform logo components
 const RedditLogo = () => (
@@ -39,6 +40,14 @@ const platforms = [
 ];
 
 export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigationProps) {
+  const supabase = useSupabase();
+  const navigate = useNavigate();
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  };
+
   return (
     <header className="bg-surface-1 border-b border-border shadow-wun-sm">
       <div className="flex items-center justify-between px-6 py-4">
@@ -80,14 +89,9 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
             Connect Platform
           </Button>
           <ThemeToggle />
-          <UserButton 
-            afterSignOutUrl="/auth"
-            appearance={{
-              elements: {
-                avatarBox: "w-8 h-8"
-              }
-            }}
-          />
+          <Button variant="ghost" size="sm" onClick={signOut}>
+            Sign out
+          </Button>
         </div>
       </div>
     </header>
