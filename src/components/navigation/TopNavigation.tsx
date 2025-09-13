@@ -2,6 +2,7 @@ import { UserButton } from '@clerk/clerk-react';
 import { Platform } from '../WunPubLayout';
 import { Button } from '@/components/ui/button';
 import { Globe } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import redditLogo from '@/assets/reddit-logo.png';
 import xLogo from '@/assets/x-logo.png';
 import linkedinLogo from '@/assets/linkedin-logo.png';
@@ -9,19 +10,19 @@ import facebookLogo from '@/assets/facebook-logo.png';
 
 // Platform logo components
 const RedditLogo = () => (
-  <img src={redditLogo} alt="Reddit" className="w-5 h-5" />
+  <img src={redditLogo} alt="Reddit" className="w-8 h-8" />
 );
 
 const TwitterLogo = () => (
-  <img src={xLogo} alt="X/Twitter" className="w-5 h-5" />
+  <img src={xLogo} alt="X/Twitter" className="w-8 h-8" />
 );
 
 const LinkedInLogo = () => (
-  <img src={linkedinLogo} alt="LinkedIn" className="w-5 h-5" />
+  <img src={linkedinLogo} alt="LinkedIn" className="w-8 h-8" />
 );
 
 const FacebookLogo = () => (
-  <img src={facebookLogo} alt="Facebook" className="w-5 h-5" />
+  <img src={facebookLogo} alt="Facebook" className="w-8 h-8" />
 );
 
 interface TopNavigationProps {
@@ -78,6 +79,7 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
           >
             Connect Platform
           </Button>
+          <ThemeToggle />
           <UserButton 
             afterSignOutUrl="/auth"
             appearance={{
