@@ -58,6 +58,10 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
     }
 
     try {
+      // Debug: Log user ID before creating project
+      console.log('User ID from Clerk:', user.id);
+      console.log('User object:', { id: user.id, emailAddresses: user.emailAddresses });
+      
       const project = await createProjectAsync({
         ...formData,
         ai_enabled: true,
@@ -68,6 +72,8 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
       });
       onComplete(project.id);
     } catch (error: any) {
+      console.error('Project creation error:', error);
+      
       let errorMessage = 'An unexpected error occurred';
       
       if (error.message.includes('User not authenticated')) {
@@ -76,6 +82,8 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
         errorMessage = 'A project with this name already exists';
       } else if (error.message.includes('permission denied')) {
         errorMessage = 'You do not have permission to create projects';
+      } else if (error.message.includes('violates row-level security')) {
+        errorMessage = 'Authentication issue. Please refresh the page and try again.';
       } else if (error.message) {
         errorMessage = error.message;
       }
