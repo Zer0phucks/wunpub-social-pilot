@@ -10,19 +10,19 @@ import facebookLogo from '@/assets/facebook-logo.png';
 
 // Platform logo components
 const RedditLogo = () => (
-  <img src={redditLogo} alt="Reddit" className="w-12 h-12 object-contain" />
+  <img src={redditLogo} alt="Reddit" className="w-20 h-20" />
 );
 
 const TwitterLogo = () => (
-  <img src={xLogo} alt="X/Twitter" className="w-12 h-12 object-contain" />
+  <img src={xLogo} alt="X/Twitter" className="w-20 h-20" />
 );
 
 const LinkedInLogo = () => (
-  <img src={linkedinLogo} alt="LinkedIn" className="w-12 h-6 object-contain" />
+  <img src={linkedinLogo} alt="LinkedIn" className="w-20 h-8" />
 );
 
 const FacebookLogo = () => (
-  <img src={facebookLogo} alt="Facebook" className="w-12 h-6 object-contain" />
+  <img src={facebookLogo} alt="Facebook" className="w-20 h-8" />
 );
 
 interface TopNavigationProps {
