@@ -602,6 +602,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      debug_auth_info: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          auth_uid: string
+          jwt_sub: string
+          jwt_user_id: string
+        }[]
+      }
       get_safe_social_accounts: {
         Args: { p_project_id: string }
         Returns: {

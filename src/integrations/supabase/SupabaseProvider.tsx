@@ -17,6 +17,7 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
       try {
         let authToken = null;
         if (getToken) {
+          // Get the Clerk token with the Supabase template
           authToken = await getToken({ template: 'supabase' });
         }
 
@@ -29,13 +30,24 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
                 Authorization: `Bearer ${authToken}`,
               },
             },
-          } : {}
+            auth: {
+              persistSession: false,
+            },
+          } : {
+            auth: {
+              persistSession: false,
+            },
+          }
         );
         setSupabase(client);
       } catch (error) {
         console.error('Error initializing Supabase client:', error);
         // Create client without auth if there's an error
-        const client = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const client = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            persistSession: false,
+          },
+        });
         setSupabase(client);
       }
     };
