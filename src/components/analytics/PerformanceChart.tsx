@@ -1,16 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts';
-
-const performanceData = [
-  { date: 'Jan 1', engagement: 3.2, impressions: 1200, clicks: 45 },
-  { date: 'Jan 2', engagement: 3.8, impressions: 1450, clicks: 58 },
-  { date: 'Jan 3', engagement: 4.1, impressions: 1380, clicks: 62 },
-  { date: 'Jan 4', engagement: 3.9, impressions: 1520, clicks: 55 },
-  { date: 'Jan 5', engagement: 4.5, impressions: 1680, clicks: 72 },
-  { date: 'Jan 6', engagement: 4.2, impressions: 1590, clicks: 68 },
-  { date: 'Jan 7', engagement: 4.8, impressions: 1720, clicks: 78 },
-];
+import { format } from 'date-fns';
 
 const chartConfig = {
   engagement: {
@@ -27,7 +18,14 @@ const chartConfig = {
   },
 }
 
-export function PerformanceChart() {
+export function PerformanceChart({ data }) {
+  const chartData = data ? data.analytics.map(analytic => ({
+    date: format(new Date(data.posts.find(p => p.id === analytic.post_id)?.published_at || Date.now()), 'MMM d'),
+    engagement: (analytic.likes + analytic.comments + analytic.shares) / 100,
+    impressions: analytic.views,
+    clicks: analytic.shares, // Using shares as clicks for now
+  })) : [];
+
   return (
     <Card>
       <CardHeader>
@@ -39,7 +37,7 @@ export function PerformanceChart() {
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={performanceData}>
+            <LineChart data={chartData}>
               <XAxis 
                 dataKey="date" 
                 axisLine={false}

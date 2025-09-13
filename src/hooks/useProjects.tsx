@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useUser } from './useUser';
 
 export interface Project {
@@ -15,6 +15,7 @@ export interface Project {
 }
 
 export const useProjects = () => {
+  const supabase = useSupabase();
   const { user } = useUser();
   const queryClient = useQueryClient();
 

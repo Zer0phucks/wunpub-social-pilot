@@ -1,31 +1,32 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useUser } from './useUser';
 
 export interface Post {
   id: string;
+  user_id: string;
   project_id: string;
-  title?: string;
-  content?: string;
+  social_account_id: string;
+  title: string;
+  content: string;
+  status: string;
   platforms: string[];
-  media_urls?: string[];
-  status: 'draft' | 'scheduled' | 'published' | 'failed';
-  scheduled_at?: string;
-  published_at?: string;
-  ai_generated: boolean;
-  template_id?: string;
+  media_urls: string[];
+  scheduled_at: string;
+  published_at: string;
   created_at: string;
   updated_at: string;
 }
 
 export const usePosts = (projectId?: string) => {
+  const supabase = useSupabase();
   const { user } = useUser();
   const queryClient = useQueryClient();
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['posts', projectId],
     queryFn: async () => {
-      if (!projectId) return [];
+      if (!user?.id || !projectId) return [];
       
       const { data, error } = await supabase
         .from('posts')
@@ -36,14 +37,16 @@ export const usePosts = (projectId?: string) => {
       if (error) throw error;
       return data as Post[];
     },
-    enabled: !!projectId,
+    enabled: !!user?.id && !!projectId,
   });
 
   const createPost = useMutation({
-    mutationFn: async (postData: Omit<Post, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (postData: Omit<Post, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+      if (!user?.id) throw new Error('User not authenticated');
+
       const { data, error } = await supabase
         .from('posts')
-        .insert(postData)
+        .insert({ ...postData, user_id: user.id })
         .select()
         .single();
 
@@ -92,8 +95,5 @@ export const usePosts = (projectId?: string) => {
     createPost: createPost.mutate,
     updatePost: updatePost.mutate,
     deletePost: deletePost.mutate,
-    isCreating: createPost.isPending,
-    isUpdating: updatePost.isPending,
-    isDeleting: deletePost.isPending,
   };
 };

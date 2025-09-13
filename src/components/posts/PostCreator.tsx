@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useProjects } from '@/hooks/useProjects';
+import { useSocialAccounts } from '@/hooks/useSocialAccounts';
 import { 
   Calendar as CalendarIcon,
   Clock,
@@ -30,7 +31,7 @@ import {
   X
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
+import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 
 const PLATFORM_LIMITS = {
   TWITTER: 280,
@@ -54,6 +55,7 @@ const PLATFORM_COLORS = {
 };
 
 export function PostCreator() {
+  const supabase = useSupabase();
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['TWITTER']);
@@ -62,12 +64,14 @@ export function PostCreator() {
   const [isScheduled, setIsScheduled] = useState(false);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [newMediaUrl, setNewMediaUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [aiTone, setAiTone] = useState<'professional' | 'casual' | 'humorous'>('professional');
   const [isLoading, setIsLoading] = useState(false);
   
   const { toast } = useToast();
   const { projects } = useProjects();
   const currentProject = projects[0]; // Assuming first project is selected
+  const { socialAccounts } = useSocialAccounts(currentProject?.id);
 
   const getCharacterCount = (platform: string) => {
     return content.length;
@@ -89,10 +93,37 @@ export function PostCreator() {
     );
   };
 
-  const addMediaUrl = () => {
-    if (newMediaUrl.trim()) {
-      setMediaUrls(prev => [...prev, newMediaUrl.trim()]);
-      setNewMediaUrl('');
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0) {
+      return;
+    }
+
+    const file = event.target.files[0];
+    const fileName = `${Date.now()}_${file.name}`;
+
+    setUploading(true);
+
+    try {
+      const { data, error } = await supabase.storage
+        .from('post-media')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('post-media')
+        .getPublicUrl(data.path);
+
+      setMediaUrls(prev => [...prev, publicUrl]);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload file. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -137,23 +168,33 @@ ${aiTone === 'professional'
 
   const saveDraft = async () => {
     if (!currentProject) return;
-    
+
     setIsLoading(true);
-    
+
     try {
-      const { error } = await supabase
-        .from('posts')
-        .insert({
+      const postsToInsert = selectedPlatforms.map(platform => {
+        const socialAccount = socialAccounts.find(acc => acc.platform.toUpperCase() === platform);
+        if (!socialAccount) {
+          throw new Error(`No social account found for platform: ${platform}`);
+        }
+        return {
           project_id: currentProject.id,
+          user_id: currentProject.user_id,
+          social_account_id: socialAccount.id,
           title: title || 'Untitled Post',
           content,
-          platforms: selectedPlatforms,
+          platforms: [platform],
           media_urls: mediaUrls,
           status: 'draft',
-          scheduled_at: isScheduled && scheduledDate && scheduledTime 
+          scheduled_at: isScheduled && scheduledDate && scheduledTime
             ? new Date(`${format(scheduledDate, 'yyyy-MM-dd')}T${scheduledTime}`).toISOString()
             : null
-        });
+        };
+      });
+
+      const { error } = await supabase
+        .from('posts')
+        .insert(postsToInsert);
 
       if (error) throw error;
 
@@ -161,7 +202,7 @@ ${aiTone === 'professional'
         title: "Draft Saved",
         description: "Your post has been saved as a draft.",
       });
-      
+
       // Reset form
       setContent('');
       setTitle('');
@@ -169,7 +210,7 @@ ${aiTone === 'professional'
       setScheduledDate(undefined);
       setScheduledTime('');
       setIsScheduled(false);
-      
+
     } catch (error) {
       console.error('Error saving draft:', error);
       toast({
@@ -184,36 +225,44 @@ ${aiTone === 'professional'
 
   const publishPost = async () => {
     if (!currentProject || !content.trim()) return;
-    
+
     setIsLoading(true);
-    
+
     try {
-      const postData = {
-        project_id: currentProject.id,
-        title: title || 'Untitled Post',
-        content,
-        platforms: selectedPlatforms,
-        media_urls: mediaUrls,
-        status: isScheduled ? 'scheduled' : 'published',
-        scheduled_at: isScheduled && scheduledDate && scheduledTime 
-          ? new Date(`${format(scheduledDate, 'yyyy-MM-dd')}T${scheduledTime}`).toISOString()
-          : null,
-        published_at: !isScheduled ? new Date().toISOString() : null
-      };
+      const postsToInsert = selectedPlatforms.map(platform => {
+        const socialAccount = socialAccounts.find(acc => acc.platform.toUpperCase() === platform);
+        if (!socialAccount) {
+          throw new Error(`No social account found for platform: ${platform}`);
+        }
+        return {
+          project_id: currentProject.id,
+          user_id: currentProject.user_id,
+          social_account_id: socialAccount.id,
+          title: title || 'Untitled Post',
+          content,
+          platforms: [platform],
+          media_urls: mediaUrls,
+          status: isScheduled ? 'scheduled' : 'published',
+          scheduled_at: isScheduled && scheduledDate && scheduledTime
+            ? new Date(`${format(scheduledDate, 'yyyy-MM-dd')}T${scheduledTime}`).toISOString()
+            : null,
+          published_at: !isScheduled ? new Date().toISOString() : null
+        };
+      });
 
       const { error } = await supabase
         .from('posts')
-        .insert(postData);
+        .insert(postsToInsert);
 
       if (error) throw error;
 
       toast({
         title: isScheduled ? "Post Scheduled" : "Post Published",
-        description: isScheduled 
+        description: isScheduled
           ? `Your post will be published on ${format(scheduledDate!, 'PPP')} at ${scheduledTime}`
           : "Your post has been published successfully!",
       });
-      
+
       // Reset form
       setContent('');
       setTitle('');
@@ -221,7 +270,7 @@ ${aiTone === 'professional'
       setScheduledDate(undefined);
       setScheduledTime('');
       setIsScheduled(false);
-      
+
     } catch (error) {
       console.error('Error publishing post:', error);
       toast({
@@ -315,17 +364,15 @@ ${aiTone === 'professional'
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex space-x-2">
-                  <Input
-                    placeholder="Enter image/video URL..."
-                    value={newMediaUrl}
-                    onChange={(e) => setNewMediaUrl(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addMediaUrl()}
-                  />
-                  <Button onClick={addMediaUrl} size="sm">
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
+                <Label htmlFor="media-upload">Upload Media</Label>
+                <Input
+                  id="media-upload"
+                  type="file"
+                  accept="image/*,video/*"
+                  onChange={handleFileUpload}
+                  disabled={uploading}
+                />
+                {uploading && <p>Uploading...</p>}
                 
                 {mediaUrls.length > 0 && (
                   <div className="space-y-2">
@@ -357,7 +404,8 @@ ${aiTone === 'professional'
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {Object.keys(PLATFORM_ICONS).map(platform => {
+                {socialAccounts.map(account => {
+                  const platform = account.platform.toUpperCase();
                   const Icon = PLATFORM_ICONS[platform as keyof typeof PLATFORM_ICONS];
                   const isSelected = selectedPlatforms.includes(platform);
                   return (

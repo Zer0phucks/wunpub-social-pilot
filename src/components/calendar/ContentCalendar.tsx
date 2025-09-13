@@ -7,6 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CalendarIcon, Clock, Eye, Edit } from 'lucide-react';
 import { usePosts, Post } from '@/hooks/usePosts';
 import { format, isSameDay, startOfDay } from 'date-fns';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface ContentCalendarProps {
   selectedProjectId?: string;
@@ -28,12 +31,54 @@ const statusColors = {
   failed: 'bg-red-500'
 };
 
+import { useDroppable } from '@dnd-kit/core';
+
+const DroppableDay = ({ date, children }: { date: Date, children: React.ReactNode }) => {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `day-${date.toISOString()}`,
+    data: {
+      date,
+    },
+  });
+
+  return (
+    <div ref={setNodeRef} className={`relative w-full h-full ${isOver ? 'bg-accent' : ''}`}>
+      {children}
+    </div>
+  );
+};
+
 export const ContentCalendar = ({ selectedProjectId }: ContentCalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [platformFilter, setPlatformFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   
-  const { posts, isLoading } = usePosts(selectedProjectId);
+  const { posts, isLoading, updatePost } = usePosts(selectedProjectId);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = selectedDatePosts.findIndex(p => p.id === active.id);
+      const newIndex = selectedDatePosts.findIndex(p => p.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newPosts = arrayMove(selectedDatePosts, oldIndex, newIndex);
+        // Here you would update the order of posts for the day, if that's a feature.
+        // For now, we are more interested in dragging between days.
+      }
+    }
+    
+    // This is a simplified example. A real implementation would need to handle dropping on a calendar day.
+    if (over && over.data.current?.date) {
+      const newDate = over.data.current.date;
+      const postId = active.id as string;
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        updatePost({ id: postId, scheduled_at: newDate.toISOString() });
+      }
+    }
+  };
 
   // Filter posts by date and other criteria
   const getPostsForDate = (date: Date) => {
@@ -148,7 +193,8 @@ export const ContentCalendar = ({ selectedProjectId }: ContentCalendarProps) => 
         </Select>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <div className="grid lg:grid-cols-3 gap-6">
         {/* Calendar */}
         <div className="lg:col-span-2">
           <Card>
@@ -175,10 +221,12 @@ export const ContentCalendar = ({ selectedProjectId }: ContentCalendarProps) => 
                 }}
                 components={{
                   DayContent: ({ date }) => (
-                    <div className="relative w-full">
-                      <span>{date.getDate()}</span>
-                      {renderDayContent(date)}
-                    </div>
+                    <DroppableDay date={date}>
+                      <div className="relative w-full h-full">
+                        <span>{date.getDate()}</span>
+                        {renderDayContent(date)}
+                      </div>
+                    </DroppableDay>
                   )
                 }}
               />
@@ -202,11 +250,13 @@ export const ContentCalendar = ({ selectedProjectId }: ContentCalendarProps) => 
                   <p>No posts scheduled for this date</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {selectedDatePosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
-                </div>
+                <SortableContext items={selectedDatePosts.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                  <div className="space-y-4">
+                    {selectedDatePosts.map((post) => (
+                      <PostCard key={post.id} post={post} />
+                    ))}
+                  </div>
+                </SortableContext>
               )}
             </CardContent>
           </Card>
@@ -236,12 +286,20 @@ export const ContentCalendar = ({ selectedProjectId }: ContentCalendarProps) => 
             </CardContent>
           </Card>
         </div>
-      </div>
+        </div>
+      </DndContext>
     </div>
   );
 };
 
 const PostCard = ({ post }: { post: Post }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: post.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   const getTimeString = () => {
     if (post.scheduled_at) {
       return `Scheduled: ${format(new Date(post.scheduled_at), 'h:mm a')}`;
@@ -253,7 +311,7 @@ const PostCard = ({ post }: { post: Post }) => {
   };
 
   return (
-    <div className="border rounded-lg p-3 space-y-2">
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="border rounded-lg p-3 space-y-2 bg-card">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           {post.title && (

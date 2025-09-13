@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useUser as useClerkUser } from '@clerk/clerk-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 
 export interface UserProfile {
   id: string;
@@ -14,6 +14,7 @@ export interface UserProfile {
 }
 
 export const useUser = () => {
+  const supabase = useSupabase();
   const { user: clerkUser, isLoaded } = useClerkUser();
   const queryClient = useQueryClient();
 

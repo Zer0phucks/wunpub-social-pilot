@@ -46,36 +46,47 @@ const FacebookLogo = () => (
   </svg>
 );
 
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { useProjects } from '@/hooks/useProjects';
+
 export function HomePage() {
+  const { projects } = useProjects();
+  const selectedProjectId = projects[0]?.id;
+  const { analytics, isLoading } = useAnalytics(selectedProjectId);
+
+  const engagementRate = analytics ? (analytics.analytics.reduce((acc, curr) => acc + curr.likes + curr.comments + curr.shares, 0) / analytics.analytics.length) / 100 : 0;
+  const postsThisWeek = analytics ? analytics.posts.filter(p => new Date(p.published_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length : 0;
+  const scheduledPosts = analytics ? analytics.posts.filter(p => p.status === 'scheduled').length : 0;
+
   const metrics = [
     {
       title: 'Engagement Rate',
-      value: '4.2%',
-      change: '+12.5%',
+      value: `${engagementRate.toFixed(2)}%`,
+      change: '+12.5%', // Mock data
       changeType: 'positive' as const,
       icon: TrendingUp,
       color: 'success'
     },
     {
       title: 'Followers Growth',
-      value: '+1.2K',
-      change: '+18.2%',
+      value: '+1.2K', // Mock data
+      change: '+18.2%', // Mock data
       changeType: 'positive' as const,
       icon: Users,
       color: 'info'
     },
     {
       title: 'Posts This Week',
-      value: '12',
-      change: '+3',
+      value: postsThisWeek,
+      change: '+3', // Mock data
       changeType: 'positive' as const,
       icon: MessageCircle,
       color: 'warning'
     },
     {
       title: 'Scheduled Posts',
-      value: '24',
-      change: 'Next: 2h',
+      value: scheduledPosts,
+      change: 'Next: 2h', // Mock data
       changeType: 'neutral' as const,
       icon: Calendar,
       color: 'brand'
@@ -180,7 +191,7 @@ export function HomePage() {
         </TabsList>
 
         <TabsContent value="performance" className="space-y-6">
-          <PerformanceChart />
+          <PerformanceChart data={analytics} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card className="lg:col-span-2">
               <CardHeader>
