@@ -232,6 +232,39 @@ export type Database = {
           },
         ]
       }
+      oauth_states: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          platform: string
+          project_id: string
+          redirect_url: string | null
+          state_token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          platform: string
+          project_id: string
+          redirect_url?: string | null
+          state_token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          platform?: string
+          project_id?: string
+          redirect_url?: string | null
+          state_token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_versions: {
         Row: {
           character_count: number | null
@@ -564,6 +597,10 @@ export type Database = {
       can_create_project: {
         Args: { user_identifier: string }
         Returns: boolean
+      }
+      cleanup_expired_oauth_states: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       get_safe_social_accounts: {
         Args: { p_project_id: string }

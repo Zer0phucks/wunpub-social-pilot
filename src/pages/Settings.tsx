@@ -15,25 +15,7 @@ const Settings = () => {
   const supabase = useSupabase();
   const { user } = useUser();
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session?.provider_token) {
-        const provider = session.user.app_metadata.provider;
-        createAccount({
-          user_id: user.id,
-          project_id: selectedProjectId,
-          platform: provider,
-          username: session.user.user_metadata.user_name,
-          access_token: session.provider_token,
-          refresh_token: session.provider_refresh_token,
-        });
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [supabase, user, selectedProjectId, createAccount]);
+  // Remove the old OAuth callback handler since we're using edge functions now
 
   return (
     <WunPubLayout>
@@ -66,11 +48,11 @@ const Settings = () => {
             {isLoading && <p>Loading accounts...</p>}
 
             {socialAccounts.map((account) => (
-              <div key={account.id} className="flex items-center justify-between p-4 border rounded-.lg">
+              <div key={account.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">
                   {account.platform === 'twitter' && <Twitter className="w-6 h-6" />}
                   {account.platform === 'linkedin' && <Linkedin className="w-6 h-6" />}
-                  <span>{account.username}</span>
+                  <span>{account.account_username}</span>
                 </div>
                 <Button variant="destructive" onClick={() => deleteAccount(account.id)}>Disconnect</Button>
               </div>

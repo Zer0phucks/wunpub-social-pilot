@@ -7,11 +7,14 @@ export interface SocialAccount {
   user_id: string;
   project_id: string;
   platform: string;
-  username: string;
-  created_at: string;
+  account_username: string;
+  account_id: string;
+  connected_at: string;
   updated_at: string;
   access_token: string;
   refresh_token: string;
+  is_active: boolean;
+  token_expires_at: string;
 }
 
 export const useSocialAccounts = (projectId: string) => {
@@ -28,7 +31,7 @@ export const useSocialAccounts = (projectId: string) => {
         .from('social_accounts')
         .select('*')
         .eq('project_id', projectId)
-        .order('created_at', { ascending: false });
+        .order('connected_at', { ascending: false });
 
       if (error) throw error;
       return data as SocialAccount[];
@@ -38,14 +41,46 @@ export const useSocialAccounts = (projectId: string) => {
 
   const connectAccount = useMutation({
     mutationFn: async (platform: 'twitter' | 'linkedin') => {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: platform,
-        options: {
-          redirectTo: `${window.location.origin}/settings`,
-        },
+      if (!user?.id || !projectId) throw new Error('User or project not found');
+
+      // Call our edge function to start OAuth flow
+      const { data, error } = await supabase.functions.invoke(`oauth-${platform}`, {
+        body: { 
+          project_id: projectId, 
+          user_id: user.id 
+        }
       });
 
       if (error) throw error;
+
+      // Open popup window for OAuth
+      const popup = window.open(
+        data.authorization_url,
+        'oauth',
+        'width=600,height=700,scrollbars=yes,resizable=yes'
+      );
+
+      // Listen for OAuth completion
+      return new Promise<void>((resolve, reject) => {
+        const messageHandler = (event: MessageEvent) => {
+          if (event.data?.type === 'oauth_success' && event.data?.platform === platform) {
+            window.removeEventListener('message', messageHandler);
+            popup?.close();
+            resolve();
+          }
+        };
+
+        window.addEventListener('message', messageHandler);
+
+        // Check if popup was closed manually
+        const checkClosed = setInterval(() => {
+          if (popup?.closed) {
+            clearInterval(checkClosed);
+            window.removeEventListener('message', messageHandler);
+            reject(new Error('OAuth cancelled'));
+          }
+        }, 1000);
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['social-accounts'] });
