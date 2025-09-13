@@ -16,6 +16,7 @@ export interface Post {
   published_at: string;
   created_at: string;
   updated_at: string;
+  ai_generated: boolean;
 }
 
 export const usePosts = (projectId?: string) => {

@@ -10,6 +10,8 @@ export interface SocialAccount {
   username: string;
   created_at: string;
   updated_at: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 export const useSocialAccounts = (projectId: string) => {
