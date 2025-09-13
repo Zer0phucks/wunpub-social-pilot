@@ -29,9 +29,6 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Form submission started');
-    console.log('User state:', { user: !!user, profile: !!profile, isUserLoading });
-    
     if (!formData.name.trim()) {
       toast({
         title: 'Project name required',
@@ -43,7 +40,6 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
 
     // Check if user is properly authenticated
     if (!user) {
-      console.error('User not authenticated during project creation');
       toast({
         title: 'Authentication required',
         description: 'Please sign in to create a project.',
@@ -54,7 +50,6 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
 
     // Wait for user loading to complete
     if (isUserLoading) {
-      console.log('User still loading, waiting...');
       toast({
         title: 'Please wait',
         description: 'Preparing your account...',
@@ -62,22 +57,17 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
       return;
     }
 
-    console.log('Creating project with form data:', formData);
-
     try {
       const project = await createProjectAsync({
         ...formData,
         ai_enabled: true,
       });
-      
-      console.log('Project creation successful:', project);
       toast({
         title: 'Project created!',
         description: 'Your WunPub project is ready to go.',
       });
       onComplete(project.id);
     } catch (error: any) {
-      console.error('Project creation failed:', error);
       let errorMessage = 'An unexpected error occurred';
       
       if (error.message.includes('User not authenticated')) {
