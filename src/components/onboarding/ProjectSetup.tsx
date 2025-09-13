@@ -15,11 +15,16 @@ interface ProjectSetupProps {
 }
 
 export function ProjectSetup({ onComplete }: ProjectSetupProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    marketing_goal: string;
+    ai_tone: 'professional' | 'casual' | 'humorous';
+  }>({
     name: '',
     description: '',
     marketing_goal: '',
-    ai_tone: 'professional' as const,
+    ai_tone: 'professional',
   });
 
   const { createProjectAsync, isCreating } = useProjects();
@@ -56,40 +61,36 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
       return;
     }
 
-    createProject(
-      {
+    try {
+      const project = await createProjectAsync({
         ...formData,
         ai_enabled: true,
-      },
-      {
-        onSuccess: (project) => {
-          toast({
-            title: 'Project created!',
-            description: 'Your WunPub project is ready to go.',
-          });
-          onComplete(project.id);
-        },
-        onError: (error) => {
-          let errorMessage = 'An unexpected error occurred';
-          
-          if (error.message.includes('User not authenticated')) {
-            errorMessage = 'Please sign in to create a project';
-          } else if (error.message.includes('duplicate key')) {
-            errorMessage = 'A project with this name already exists';
-          } else if (error.message.includes('permission denied')) {
-            errorMessage = 'You do not have permission to create projects';
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
-          
-          toast({
-            title: 'Failed to create project',
-            description: errorMessage,
-            variant: 'destructive',
-          });
-        },
+      });
+      
+      toast({
+        title: 'Project created!',
+        description: 'Your WunPub project is ready to go.',
+      });
+      onComplete(project.id);
+    } catch (error: any) {
+      let errorMessage = 'An unexpected error occurred';
+      
+      if (error.message.includes('User not authenticated')) {
+        errorMessage = 'Please sign in to create a project';
+      } else if (error.message.includes('duplicate key')) {
+        errorMessage = 'A project with this name already exists';
+      } else if (error.message.includes('permission denied')) {
+        errorMessage = 'You do not have permission to create projects';
+      } else if (error.message) {
+        errorMessage = error.message;
       }
-    );
+      
+      toast({
+        title: 'Failed to create project',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -158,7 +159,7 @@ export function ProjectSetup({ onComplete }: ProjectSetupProps) {
               </Label>
               <RadioGroup
                 value={formData.ai_tone}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, ai_tone: value as 'professional' | 'casual' | 'humorous' }))}
+                onValueChange={(value: 'professional' | 'casual' | 'humorous') => setFormData(prev => ({ ...prev, ai_tone: value }))}
                 className="grid grid-cols-3 gap-4"
               >
                 <div className="flex items-center space-x-2 p-3 rounded-lg border border-border bg-surface-1">
