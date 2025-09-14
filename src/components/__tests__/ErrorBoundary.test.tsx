@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErrorBoundary } from "../ErrorBoundary";
@@ -173,7 +173,6 @@ describe("ErrorBoundary", () => {
 
   it("should handle null error objects", () => {
     const ComponentWithNullError = () => {
-      // @ts-expect-error - Testing null error scenario
       throw null;
     };
 

@@ -24,15 +24,22 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
-// Mock IntersectionObserver
+// Mock IntersectionObserver  
 global.IntersectionObserver = class IntersectionObserver {
+  root = null;
+  rootMargin = '';
+  thresholds = [];
+  
   constructor(cb: any) {
     // Mock implementation
   }
   observe() {}
   unobserve() {}
   disconnect() {}
-};
+  takeRecords() { return []; }
+} as any;
+
+import { vi } from 'vitest';
 
 // Mock matchMedia
 Object.defineProperty(window, "matchMedia", {

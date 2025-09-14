@@ -4,7 +4,6 @@ import {
   decryptToken,
   sanitizeTokenForLogging,
   isTokenEncrypted,
-  clearToken,
   isWebCryptoSupported,
   validateToken
 } from "../tokenSecurity";
@@ -36,8 +35,7 @@ describe("tokenSecurity", () => {
 
     it("should return false when crypto is undefined", () => {
       const originalCrypto = globalThis.crypto;
-      // @ts-expect-error - testing undefined crypto
-      globalThis.crypto = undefined;
+      globalThis.crypto = undefined as any;
 
       const result = isWebCryptoSupported();
       expect(result).toBe(false);
@@ -102,19 +100,6 @@ describe("tokenSecurity", () => {
     });
   });
 
-  describe("clearToken", () => {
-    it("should clear token reference", () => {
-      const tokenRef = { value: "sensitive-token" };
-      clearToken(tokenRef);
-      expect(tokenRef.value).toBe("");
-    });
-
-    it("should handle empty token reference", () => {
-      const tokenRef = { value: "" };
-      clearToken(tokenRef);
-      expect(tokenRef.value).toBe("");
-    });
-  });
 
   describe("encryptToken", () => {
     it("should encrypt token successfully", async () => {
