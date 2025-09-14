@@ -502,6 +502,60 @@ export type Database = {
           },
         ]
       }
+      social_api_usage_log: {
+        Row: {
+          action: string
+          error_message: string | null
+          id: string
+          ip_address: unknown | null
+          platform: string
+          social_account_id: string
+          success: boolean
+          timestamp: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown | null
+          platform: string
+          social_account_id: string
+          success?: boolean
+          timestamp?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown | null
+          platform?: string
+          social_account_id?: string
+          success?: boolean
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_api_usage_log_social_account_id_fkey"
+            columns: ["social_account_id"]
+            isOneToOne: false
+            referencedRelation: "safe_social_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_api_usage_log_social_account_id_fkey"
+            columns: ["social_account_id"]
+            isOneToOne: false
+            referencedRelation: "social_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       templates: {
         Row: {
           content: string
@@ -587,7 +641,56 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      safe_social_accounts: {
+        Row: {
+          account_id: string | null
+          account_username: string | null
+          connected_at: string | null
+          has_access_token: boolean | null
+          has_refresh_token: boolean | null
+          id: string | null
+          is_active: boolean | null
+          platform: string | null
+          project_id: string | null
+          token_expires_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          account_username?: string | null
+          connected_at?: string | null
+          has_access_token?: never
+          has_refresh_token?: never
+          id?: string | null
+          is_active?: boolean | null
+          platform?: string | null
+          project_id?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          account_username?: string | null
+          connected_at?: string | null
+          has_access_token?: never
+          has_refresh_token?: never
+          id?: string | null
+          is_active?: boolean | null
+          platform?: string | null
+          project_id?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_accounts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       can_access_social_tokens: {
