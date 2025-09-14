@@ -1,20 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useUser } from './useUser';
-import { decryptToken, sanitizeTokenForLogging } from '@/utils/tokenSecurity';
 import { useSecurityAudit, createSecurityEvent } from '@/hooks/useSecurityAudit';
 
 export interface SocialAccount {
   id: string;
-  user_id: string;
   project_id: string;
   platform: string;
   account_username: string;
   account_id: string;
   connected_at: string;
   updated_at: string;
-  access_token: string;
-  refresh_token: string;
+  has_access_token: boolean;
+  has_refresh_token: boolean;
   is_active: boolean;
   token_expires_at: string;
 }
@@ -30,49 +28,23 @@ export const useSocialAccounts = (projectId: string) => {
     queryFn: async () => {
       if (!user?.id || !projectId) return [];
       
+      // Use the secure view that excludes sensitive token data
       const { data, error } = await supabase
-        .from('social_accounts')
+        .from('safe_social_accounts')
         .select('*')
         .eq('project_id', projectId)
         .order('connected_at', { ascending: false });
 
       if (error) throw error;
       
-      // Decrypt tokens for client-side use, but keep them secure in logs
-      const decryptedAccounts = await Promise.all(
-        (data || []).map(async (account) => {
-          try {
-            const decryptedAccessToken = account.access_token ? await decryptToken(account.access_token) : '';
-            const decryptedRefreshToken = account.refresh_token ? await decryptToken(account.refresh_token) : '';
-            
-            // Log token access for security audit
-            if (decryptedAccessToken || decryptedRefreshToken) {
-              logSecurityEvent(createSecurityEvent.tokenAccess(account.platform, account.account_id));
-            }
-            
-            console.log(`Decrypted tokens for account ${account.id} (${account.platform}):`, {
-              access_token: sanitizeTokenForLogging(decryptedAccessToken),
-              refresh_token: sanitizeTokenForLogging(decryptedRefreshToken)
-            });
-            
-            return {
-              ...account,
-              access_token: decryptedAccessToken,
-              refresh_token: decryptedRefreshToken,
-            };
-          } catch (error) {
-            console.error(`Failed to decrypt tokens for account ${account.id}:`, error);
-            // Return account with empty tokens on decryption failure
-            return {
-              ...account,
-              access_token: '',
-              refresh_token: '',
-            };
-          }
-        })
-      );
+      // Log safe account access for security audit
+      if (data && data.length > 0) {
+        data.forEach(account => {
+          logSecurityEvent(createSecurityEvent.accountConnection(account.platform, account.account_id));
+        });
+      }
       
-      return decryptedAccounts as SocialAccount[];
+      return (data || []) as SocialAccount[];
     },
     enabled: !!user?.id && !!projectId,
   });
