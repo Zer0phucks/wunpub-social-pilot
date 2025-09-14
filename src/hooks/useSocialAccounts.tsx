@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useUser } from './useUser';
+import { decryptToken, sanitizeTokenForLogging } from '@/utils/tokenSecurity';
 
 export interface SocialAccount {
   id: string;
@@ -34,7 +35,37 @@ export const useSocialAccounts = (projectId: string) => {
         .order('connected_at', { ascending: false });
 
       if (error) throw error;
-      return data as SocialAccount[];
+      
+      // Decrypt tokens for client-side use, but keep them secure in logs
+      const decryptedAccounts = await Promise.all(
+        (data || []).map(async (account) => {
+          try {
+            const decryptedAccessToken = account.access_token ? await decryptToken(account.access_token) : '';
+            const decryptedRefreshToken = account.refresh_token ? await decryptToken(account.refresh_token) : '';
+            
+            console.log(`Decrypted tokens for account ${account.id} (${account.platform}):`, {
+              access_token: sanitizeTokenForLogging(decryptedAccessToken),
+              refresh_token: sanitizeTokenForLogging(decryptedRefreshToken)
+            });
+            
+            return {
+              ...account,
+              access_token: decryptedAccessToken,
+              refresh_token: decryptedRefreshToken,
+            };
+          } catch (error) {
+            console.error(`Failed to decrypt tokens for account ${account.id}:`, error);
+            // Return account with empty tokens on decryption failure
+            return {
+              ...account,
+              access_token: '',
+              refresh_token: '',
+            };
+          }
+        })
+      );
+      
+      return decryptedAccounts as SocialAccount[];
     },
     enabled: !!user?.id && !!projectId,
   });
@@ -103,6 +134,8 @@ export const useSocialAccounts = (projectId: string) => {
 
   const createAccount = useMutation({
     mutationFn: async (accountData: Omit<SocialAccount, 'id' | 'created_at' | 'updated_at'>) => {
+      // Note: This function is kept for compatibility, but tokens should be encrypted 
+      // at the edge function level before insertion to ensure end-to-end security
       const { data, error } = await supabase
         .from('social_accounts')
         .insert(accountData)

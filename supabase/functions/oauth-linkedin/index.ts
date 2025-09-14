@@ -1,6 +1,37 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// Enhanced encryption utilities for token security
+async function encryptToken(token: string): Promise<string> {
+  if (!token || token.length === 0) return token;
+
+  try {
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(Deno.env.get('ENCRYPTION_KEY') || 'wunpub_social_tokens_2025_secure'),
+      { name: 'AES-GCM' },
+      false,
+      ['encrypt']
+    );
+
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      new TextEncoder().encode(token)
+    );
+
+    const combined = new Uint8Array(iv.length + encrypted.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(encrypted), iv.length);
+
+    return btoa(String.fromCharCode(...combined));
+  } catch (error) {
+    console.error('Token encryption failed:', error);
+    throw new Error('Failed to encrypt token');
+  }
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -140,7 +171,13 @@ serve(async (req) => {
         )
       }
 
-      // Store social account
+      // Encrypt tokens before storage for security
+      const encryptedAccessToken = await encryptToken(tokens.access_token);
+      const encryptedRefreshToken = tokens.refresh_token ? await encryptToken(tokens.refresh_token) : null;
+
+      console.log('LinkedIn OAuth successful - storing encrypted tokens for user:', userData.sub);
+
+      // Store social account with encrypted tokens
       await supabase
         .from('social_accounts')
         .insert({
@@ -148,8 +185,8 @@ serve(async (req) => {
           platform: 'linkedin',
           account_id: userData.sub,
           account_username: userData.name || userData.email,
-          access_token: tokens.access_token,
-          refresh_token: tokens.refresh_token,
+          access_token: encryptedAccessToken,
+          refresh_token: encryptedRefreshToken,
           token_expires_at: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000).toISOString() : null,
         })
 
