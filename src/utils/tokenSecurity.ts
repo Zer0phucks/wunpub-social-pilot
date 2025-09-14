@@ -38,7 +38,11 @@ export async function encryptToken(token: string, passphrase?: string): Promise<
 
   try {
     // Use environment-specific passphrase or fallback
-    const keyPassphrase = passphrase || import.meta.env.VITE_ENCRYPTION_KEY || 'wunpub_social_tokens_2025_secure';
+    const keyPassphrase = passphrase || import.meta.env.VITE_ENCRYPTION_KEY;
+    
+    if (!keyPassphrase) {
+      throw new Error('Encryption key not configured. Set VITE_ENCRYPTION_KEY environment variable.');
+    }
 
     // Generate random salt and IV
     const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -80,7 +84,11 @@ export async function decryptToken(encryptedToken: string, passphrase?: string):
 
   try {
     // Use environment-specific passphrase or fallback
-    const keyPassphrase = passphrase || import.meta.env.VITE_ENCRYPTION_KEY || 'wunpub_social_tokens_2025_secure';
+    const keyPassphrase = passphrase || import.meta.env.VITE_ENCRYPTION_KEY;
+    
+    if (!keyPassphrase) {
+      throw new Error('Encryption key not configured. Set VITE_ENCRYPTION_KEY environment variable.');
+    }
 
     // Decode from base64
     const combined = new Uint8Array(

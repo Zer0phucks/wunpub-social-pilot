@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useUser } from './useUser';
 import { decryptToken, sanitizeTokenForLogging } from '@/utils/tokenSecurity';
+import { useSecurityAudit, createSecurityEvent } from '@/hooks/useSecurityAudit';
 
 export interface SocialAccount {
   id: string;
@@ -22,6 +23,7 @@ export const useSocialAccounts = (projectId: string) => {
   const supabase = useSupabase();
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const { logSecurityEvent } = useSecurityAudit();
 
   const { data: socialAccounts = [], isLoading } = useQuery({
     queryKey: ['social-accounts', projectId],
@@ -42,6 +44,11 @@ export const useSocialAccounts = (projectId: string) => {
           try {
             const decryptedAccessToken = account.access_token ? await decryptToken(account.access_token) : '';
             const decryptedRefreshToken = account.refresh_token ? await decryptToken(account.refresh_token) : '';
+            
+            // Log token access for security audit
+            if (decryptedAccessToken || decryptedRefreshToken) {
+              logSecurityEvent(createSecurityEvent.tokenAccess(account.platform, account.account_id));
+            }
             
             console.log(`Decrypted tokens for account ${account.id} (${account.platform}):`, {
               access_token: sanitizeTokenForLogging(decryptedAccessToken),
@@ -95,6 +102,7 @@ export const useSocialAccounts = (projectId: string) => {
       return new Promise<void>((resolve, reject) => {
         const messageHandler = (event: MessageEvent) => {
           if (event.data?.type === 'oauth_success' && event.data?.platform === platform) {
+            logSecurityEvent(createSecurityEvent.accountConnection(platform, 'connected'));
             window.removeEventListener('message', messageHandler);
             popup?.close();
             resolve();
