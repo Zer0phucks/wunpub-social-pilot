@@ -9,22 +9,21 @@ import facebookLogo from '@/assets/facebook-logo.png';
 import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useNavigate } from 'react-router-dom';
 
-// Platform logo components
-const RedditLogo = () => (
-  <img src={redditLogo} alt="Reddit" className="w-20 h-20" />
+// Platform logo components (normalized sizing and aspect)
+const LogoImage = ({ src, alt }: { src: string; alt: string }) => (
+  <img
+    src={src}
+    alt={alt}
+    className="w-5 h-5 md:w-6 md:h-6 object-contain"
+    loading="lazy"
+    decoding="async"
+  />
 );
 
-const TwitterLogo = () => (
-  <img src={xLogo} alt="X/Twitter" className="w-20 h-20" />
-);
-
-const LinkedInLogo = () => (
-  <img src={linkedinLogo} alt="LinkedIn" className="w-20 h-8" />
-);
-
-const FacebookLogo = () => (
-  <img src={facebookLogo} alt="Facebook" className="w-20 h-8" />
-);
+const RedditLogo = () => <LogoImage src={redditLogo} alt="Reddit" />;
+const TwitterLogo = () => <LogoImage src={xLogo} alt="X/Twitter" />;
+const LinkedInLogo = () => <LogoImage src={linkedinLogo} alt="LinkedIn" />;
+const FacebookLogo = () => <LogoImage src={facebookLogo} alt="Facebook" />;
 
 interface TopNavigationProps {
   selectedPlatform: Platform;
@@ -73,8 +72,12 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
                     : 'hover:bg-surface-2 text-muted-foreground hover:text-foreground'
                   }
                 `}
+                aria-label={`Select ${platform.name}`}
               >
-                <platform.logo />
+                {/* Icon container to prevent stretching */}
+                <div className="flex items-center justify-center w-6 h-6">
+                  <platform.logo />
+                </div>
               </Button>
             ))}
           </nav>
