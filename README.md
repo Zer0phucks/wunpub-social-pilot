@@ -1,73 +1,122 @@
-# Welcome to your Lovable project
+# WunPub - Social Media Management Platform
 
-## Project info
+A comprehensive social media management platform built with React, TypeScript, and Supabase.
 
-**URL**: https://lovable.dev/projects/d3f75204-7114-49c5-b8f5-757d22673bfc
+## Features
 
-## How can I edit this code?
+- **Multi-platform Support**: Twitter/X and LinkedIn integration
+- **Secure Token Management**: Encrypted token storage with audit logging
+- **Content Scheduling**: Create and schedule posts across platforms
+- **Analytics Dashboard**: Track performance and engagement metrics
+- **Template System**: Reusable content templates
+- **Community Monitoring**: Track relevant discussions and engagement opportunities
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Edge Functions, Authentication)
+- **State Management**: TanStack Query
+- **Routing**: React Router
+- **Testing**: Vitest, Testing Library
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d3f75204-7114-49c5-b8f5-757d22673bfc) and start prompting.
+## Development Setup
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Local Development
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-Follow these steps:
+3. Copy environment variables:
+   ```bash
+   cp .env.example .env.local
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Environment Variables
 
-# Step 3: Install the necessary dependencies.
-npm i
+Set these in your deployment environment (Vercel):
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+- `VITE_SUPABASE_URL`: Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+
+### Edge Function Secrets
+
+Configure these in your Supabase project settings:
+
+- `TWITTER_CLIENT_ID`: Twitter OAuth client ID
+- `TWITTER_CLIENT_SECRET`: Twitter OAuth client secret  
+- `LINKEDIN_CLIENT_ID`: LinkedIn OAuth client ID
+- `LINKEDIN_CLIENT_SECRET`: LinkedIn OAuth client secret
+- `ENCRYPTION_KEY`: 32-character key for token encryption
+
+## Deployment
+
+### Vercel Deployment
+
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Supabase Edge Functions
+
+Edge functions are deployed automatically with Supabase CLI:
+
+```bash
+supabase functions deploy oauth-twitter
+supabase functions deploy oauth-linkedin  
+supabase functions deploy social-media-proxy
 ```
 
-**Edit a file directly in GitHub**
+## Database Schema
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The application uses the following main tables:
 
-**Use GitHub Codespaces**
+- `profiles`: User profile information
+- `projects`: User projects/workspaces
+- `social_accounts`: Connected social media accounts (encrypted tokens)
+- `posts`: Content posts and scheduling
+- `templates`: Reusable content templates
+- `communities`: Monitored communities for engagement
+- `messages`: Inbox for social media interactions
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Security Features
 
-## What technologies are used for this project?
+- **Row Level Security (RLS)**: All tables protected with user-specific policies
+- **Token Encryption**: Social media tokens encrypted at rest
+- **Audit Logging**: All token access logged for security monitoring
+- **Secure Views**: Safe data access without exposing sensitive information
 
-This project is built with:
+## Testing
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Run the test suite:
 
-## How can I deploy this project?
+```bash
+npm run test          # Run tests
+npm run test:ui       # Run with UI
+npm run coverage      # Generate coverage report
+```
 
-Simply open [Lovable](https://lovable.dev/projects/d3f75204-7114-49c5-b8f5-757d22673bfc) and click on Share -> Publish.
+## Contributing
 
-## Can I connect a custom domain to my Lovable project?
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-Yes, you can!
+## License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is proprietary and confidential.
