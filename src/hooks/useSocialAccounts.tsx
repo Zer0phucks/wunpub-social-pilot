@@ -136,10 +136,8 @@ export const useSocialAccounts = (projectId: string) => {
     connectAccount: connectAccount.mutate,
     deleteAccount: deleteAccount.mutate,
     createAccount: createAccount.mutate,
-    callSocialMediaAPI: callSocialMediaAPI.mutate,
     isConnecting: connectAccount.isPending,
     isDeleting: deleteAccount.isPending,
     isCreating: createAccount.isPending,
-    isCallingAPI: callSocialMediaAPI.isPending,
   };
 };
