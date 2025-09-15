@@ -1,20 +1,5 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite",
-  "functions": {
-    "supabase/functions/**/*.ts": {
-      "runtime": "edge"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/supabase/functions/(.*)",
-      "destination": "/supabase/functions/$1"
-    }
-  ],
-  "env": {
-    "VITE_SUPABASE_URL": "@SUPABASE_URL",
-    "VITE_SUPABASE_PUBLISHABLE_KEY": "@SUPABASE_ANON_KEY"
-  }
+  "framework": "vite"
 }
