@@ -27,7 +27,12 @@ export function WunPubLayout({ children }: WunPubLayoutProps) {
   useEffect(() => {
     if (!isProjectsLoading && projects.length > 0 && !selectedProjectId) {
       setSelectedProjectId(projects[0].id);
-    } else if (!isProjectsLoading && projects.length === 0 && !showProjectSetup) {
+    } else if (
+      !isProjectsLoading &&
+      projects.length === 0 &&
+      !selectedProjectId &&
+      !showProjectSetup
+    ) {
       setShowProjectSetup(true);
     }
   }, [projects, isProjectsLoading, selectedProjectId, showProjectSetup]);

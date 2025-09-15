@@ -56,7 +56,14 @@ export const useProjects = () => {
       }
       return data as Project;
     },
-    onSuccess: () => {
+    onSuccess: (newProject) => {
+      // Optimistically update cache so UI reflects the new project immediately
+      if (user?.id) {
+        queryClient.setQueryData<Project[] | undefined>(['projects', user.id], (old) => {
+          const current = Array.isArray(old) ? old : [];
+          return [newProject as Project, ...current];
+        });
+      }
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
   });
