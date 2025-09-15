@@ -650,36 +650,11 @@ export type Database = {
           has_refresh_token: boolean | null
           id: string | null
           is_active: boolean | null
+          is_token_expired: boolean | null
           platform: string | null
           project_id: string | null
           token_expires_at: string | null
           updated_at: string | null
-        }
-        Insert: {
-          account_id?: string | null
-          account_username?: string | null
-          connected_at?: string | null
-          has_access_token?: never
-          has_refresh_token?: never
-          id?: string | null
-          is_active?: boolean | null
-          platform?: string | null
-          project_id?: string | null
-          token_expires_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          account_id?: string | null
-          account_username?: string | null
-          connected_at?: string | null
-          has_access_token?: never
-          has_refresh_token?: never
-          id?: string | null
-          is_active?: boolean | null
-          platform?: string | null
-          project_id?: string | null
-          token_expires_at?: string | null
-          updated_at?: string | null
         }
         Relationships: [
           {
