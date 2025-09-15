@@ -23,19 +23,39 @@ export function WunPubLayout({ children }: WunPubLayoutProps) {
   const { isLoading: isUserLoading } = useUser();
   const { projects, isLoading: isProjectsLoading } = useProjects();
 
-  // Auto-select first project or show setup
+  // Restore last selected project from localStorage
   useEffect(() => {
-    if (!isProjectsLoading && projects.length > 0 && !selectedProjectId) {
-      setSelectedProjectId(projects[0].id);
-    } else if (
-      !isProjectsLoading &&
-      projects.length === 0 &&
-      !selectedProjectId &&
-      !showProjectSetup
-    ) {
-      setShowProjectSetup(true);
+    const saved = typeof window !== 'undefined' ? window.localStorage.getItem('wunpub:selectedProjectId') : null;
+    if (saved && !selectedProjectId) {
+      setSelectedProjectId(saved);
     }
-  }, [projects, isProjectsLoading, selectedProjectId, showProjectSetup]);
+  }, []);
+
+  // Persist selected project
+  useEffect(() => {
+    if (selectedProjectId && typeof window !== 'undefined') {
+      window.localStorage.setItem('wunpub:selectedProjectId', selectedProjectId);
+    }
+  }, [selectedProjectId]);
+
+  // Auto-select first project or show/hide setup appropriately
+  useEffect(() => {
+    if (isProjectsLoading) return;
+
+    if (projects.length > 0) {
+      const exists = selectedProjectId && projects.some(p => p.id === selectedProjectId);
+      if (!selectedProjectId || !exists) {
+        setSelectedProjectId(projects[0].id);
+      }
+      if (showProjectSetup) {
+        setShowProjectSetup(false);
+      }
+    } else {
+      if (!showProjectSetup) {
+        setShowProjectSetup(true);
+      }
+    }
+  }, [isProjectsLoading, projects, projects.length, selectedProjectId, showProjectSetup]);
 
   // Show loading while user data loads
   if (isUserLoading || isProjectsLoading) {
