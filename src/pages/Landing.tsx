@@ -176,9 +176,21 @@ const Landing = () => {
               <span className="text-foreground font-semibold">WunPub</span>
             </div>
             <div className="flex items-center gap-6">
-              <a href="/auth" className="hover:text-foreground">Sign in</a>
-              <a href="/settings" className="hover:text-foreground">Settings</a>
-              <a href="/" className="hover:text-foreground">Home</a>
+              <Link to="/auth" className="hover:text-foreground">
+                Sign in
+              </Link>
+              <Link to="/settings" className="hover:text-foreground">
+                Settings
+              </Link>
+              <Link to="/policy" className="hover:text-foreground">
+                Privacy policy
+              </Link>
+              <Link to="/terms" className="hover:text-foreground">
+                Terms of service
+              </Link>
+              <Link to="/" className="hover:text-foreground">
+                Home
+              </Link>
             </div>
           </div>
         </div>
@@ -188,4 +200,3 @@ const Landing = () => {
 };
 
 export default Landing;
-

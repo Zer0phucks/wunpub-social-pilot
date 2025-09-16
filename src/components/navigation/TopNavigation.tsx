@@ -9,33 +9,56 @@ import facebookLogo from '@/assets/facebook-logo.png';
 import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useNavigate } from 'react-router-dom';
 
+interface LogoImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
 // Platform logo components (normalized sizing and aspect)
-const LogoImage = ({ src, alt }: { src: string; alt: string }) => (
-  <img
-    src={src}
-    alt={alt}
-    className="w-5 h-5 md:w-6 md:h-6 object-contain"
-    loading="lazy"
-    decoding="async"
-  />
+const LogoImage = ({ src, alt, className }: LogoImageProps) => {
+  const combinedClassName = className ? `object-contain ${className}` : 'object-contain';
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={combinedClassName}
+      loading="lazy"
+      decoding="async"
+    />
+  );
+};
+
+const RedditLogo = (props: { className?: string }) => (
+  <LogoImage src={redditLogo} alt="Reddit" {...props} />
 );
 
-const RedditLogo = () => <LogoImage src={redditLogo} alt="Reddit" />;
-const TwitterLogo = () => <LogoImage src={xLogo} alt="X/Twitter" />;
-const LinkedInLogo = () => <LogoImage src={linkedinLogo} alt="LinkedIn" />;
-const FacebookLogo = () => <LogoImage src={facebookLogo} alt="Facebook" />;
+const TwitterLogo = (props: { className?: string }) => (
+  <LogoImage src={xLogo} alt="X/Twitter" {...props} />
+);
+
+const LinkedInLogo = (props: { className?: string }) => (
+  <LogoImage src={linkedinLogo} alt="LinkedIn" {...props} />
+);
+
+const FacebookLogo = (props: { className?: string }) => (
+  <LogoImage src={facebookLogo} alt="Facebook" {...props} />
+);
 
 interface TopNavigationProps {
   selectedPlatform: Platform;
   onPlatformChange: (platform: Platform) => void;
 }
 
-const platforms = [
-  { id: 'ALL' as Platform, name: 'ALL', logo: Globe, color: 'brand' },
-  { id: 'REDDIT' as Platform, name: 'Reddit', logo: RedditLogo, color: 'reddit' },
-  { id: 'TWITTER' as Platform, name: 'Twitter/X', logo: TwitterLogo, color: 'twitter' },
-  { id: 'FACEBOOK' as Platform, name: 'Facebook', logo: FacebookLogo, color: 'facebook' },
-  { id: 'LINKEDIN' as Platform, name: 'LinkedIn', logo: LinkedInLogo, color: 'linkedin' }
+type PlatformLogo = (props: { className?: string }) => JSX.Element;
+
+const platforms: { id: Platform; name: string; logo: PlatformLogo; color: string }[] = [
+  { id: 'ALL', name: 'ALL', logo: (props) => <Globe {...props} />, color: 'brand' },
+  { id: 'REDDIT', name: 'Reddit', logo: RedditLogo, color: 'reddit' },
+  { id: 'TWITTER', name: 'Twitter/X', logo: TwitterLogo, color: 'twitter' },
+  { id: 'FACEBOOK', name: 'Facebook', logo: FacebookLogo, color: 'facebook' },
+  { id: 'LINKEDIN', name: 'LinkedIn', logo: LinkedInLogo, color: 'linkedin' }
 ];
 
 export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigationProps) {
@@ -59,27 +82,31 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
           </div>
           
           <nav className="flex items-center justify-between flex-1 max-w-2xl">
-            {platforms.map((platform) => (
-              <Button
-                key={platform.id}
-                variant={selectedPlatform === platform.id ? "default" : "ghost"}
-                size="sm"
-                onClick={() => onPlatformChange(platform.id)}
-                className={`
-                  flex items-center justify-center w-10 h-10 transition-all duration-200
-                  ${selectedPlatform === platform.id 
-                    ? 'bg-brand text-brand-foreground shadow-wun-brand' 
-                    : 'hover:bg-surface-2 text-muted-foreground hover:text-foreground'
-                  }
-                `}
-                aria-label={`Select ${platform.name}`}
-              >
-                {/* Icon container to prevent stretching */}
-                <div className="flex items-center justify-center w-6 h-6">
-                  <platform.logo />
-                </div>
-              </Button>
-            ))}
+            {platforms.map((platform) => {
+              const Logo = platform.logo;
+
+              return (
+                <Button
+                  key={platform.id}
+                  variant={selectedPlatform === platform.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => onPlatformChange(platform.id)}
+                  className={`
+                    flex items-center justify-center w-12 h-12 md:w-14 md:h-14 transition-all duration-200
+                    ${selectedPlatform === platform.id 
+                      ? 'bg-brand text-brand-foreground shadow-wun-brand' 
+                      : 'hover:bg-surface-2 text-muted-foreground hover:text-foreground'
+                    }
+                  `}
+                  aria-label={`Select ${platform.name}`}
+                >
+                  {/* Icon container keeps consistent sizing */}
+                  <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12">
+                    <Logo className="w-full h-full" />
+                  </div>
+                </Button>
+              );
+            })}
           </nav>
         </div>
         

@@ -11,6 +11,8 @@ import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
 import { useUser } from "@/hooks/useUser";
 import Landing from "./pages/Landing";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,8 @@ const App = () => {
                 />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/policy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
