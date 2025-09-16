@@ -138,9 +138,8 @@ describe("myUtilityFunction", () => {
 
 ```typescript
 // Mock external libraries
-vi.mock("@clerk/clerk-react", () => ({
-  useUser: vi.fn(),
-  useAuth: vi.fn(),
+vi.mock("@supabase/supabase-js", () => ({
+  createClient: vi.fn(() => mockSupabase),
 }));
 
 // Mock custom hooks

@@ -22,13 +22,19 @@ The following features are essential for the MVP launch:
 This phase focuses on solidifying the backend, authentication, and data models.
 
 *   **[ ] Finalize User Authentication:**
-    *   [ ] Complete the integration of Clerk for user authentication.
     *   [ ] Implement robust Supabase Row Level Security (RLS) policies for all tables to ensure users can only access their own data.
-    *   [ ] Create a `profiles` table to store user-specific information not handled by Clerk.
+    *   [ ] Create a `profiles` table to store user-specific information not handled by Supabase
+    *   [ ] Implement social logins:
+            [ ] Google
+            [ ] Facebook
+            [ ] Linkedin
+            [ ] X/Twitter
+            [ ] Github
+
 
 *   **[ ] Define Database Schema:**
     *   [ ] **`projects` table:** Finalize the schema for managing user projects.
-    *   [ ] **`social_accounts` table:** Store connected social media accounts, including access tokens and refresh tokens, securely.
+    *   [ ] **`social_accounts` table:** Store connected social media accounts, including access tokens and refresh tokens, securely. Social accounts are scoped to the project, not the account. So the user can have 1 of each social account per platform per project.
     *   [ ] **`posts` table:** Store post content, status (draft, scheduled, published), scheduled time, and associated social account.
     *   [ ] **`post_analytics` table:** Store basic analytics data for each post (likes, comments, shares).
 
@@ -42,8 +48,8 @@ This phase involves connecting the frontend UI components to the backend and imp
 
 *   **[ ] Project & Social Account Management:**
     *   [ ] Build the UI for creating, editing, and deleting projects.
-    *   [ ] Implement the OAuth flow for connecting social media accounts (start with Twitter/X and LinkedIn).
-    *   [ ] Create a settings page for managing connected accounts.
+    *   [ ] Implement the OAuth flow for connecting social media accounts.
+    *   [ ] Create a settings page for each project for managing connected accounts for that project.
 
 *   **[ ] Post Creator & Scheduling:**
     *   [ ] Connect the `PostCreator` component to the backend to save drafts and schedule posts.
@@ -73,15 +79,16 @@ This phase is for bug fixing, improving the user experience, and preparing for d
     *   [ ] Conduct end-to-end testing of the core user flows.
 
 *   **[ ] Deployment:**
-    *   [ ] Set up a production environment on a platform like Vercel or Netlify.
+    *   [ ] Set up a production environment on Vercel
+    *   [ ] Set up a development environment on Vercel.
+    *   [ ] Set up a preview environment on Vercel.
     *   [ ] Configure CI/CD to automate deployments.
     *   [ ] Perform final security checks and code reviews.
 
 ## 4. Post-MVP
 
-*   **More Social Integrations:** Add support for platforms like Facebook, Instagram, and Reddit.
-*   **Advanced Analytics:** Provide more in-depth analytics and reporting.
-*   **Team Collaboration:** Allow multiple users to collaborate on projects.
-*   **Content Templates:** Enhance the template library with more features.
-*   **AI Content Generation:** Integrate a large language model to assist with content creation.
+
+
+
+
 *   **Inbox/Engagement:** Build out the `Inbox` feature to allow users to reply to comments and messages directly from WunPub.
