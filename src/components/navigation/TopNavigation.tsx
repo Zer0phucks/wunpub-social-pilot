@@ -8,6 +8,8 @@ import linkedinLogo from '@/assets/linkedin-logo.png';
 import facebookLogo from '@/assets/facebook-logo.png';
 import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useNavigate } from 'react-router-dom';
+import { useBackgroundRemoval } from '@/hooks/useBackgroundRemoval';
+import { useEffect, useState } from 'react';
 
 interface LogoImageProps {
   src: string;
@@ -17,11 +19,27 @@ interface LogoImageProps {
 
 // Platform logo components (normalized sizing and aspect)
 const LogoImage = ({ src, alt, className }: LogoImageProps) => {
+  const { processImage } = useBackgroundRemoval();
+  const [processedSrc, setProcessedSrc] = useState(src);
   const combinedClassName = className ? `object-contain ${className}` : 'object-contain';
+
+  useEffect(() => {
+    const processLogo = async () => {
+      try {
+        const processed = await processImage(src);
+        setProcessedSrc(processed);
+      } catch (error) {
+        console.error('Failed to process logo:', error);
+        setProcessedSrc(src);
+      }
+    };
+
+    processLogo();
+  }, [src, processImage]);
 
   return (
     <img
-      src={src}
+      src={processedSrc}
       alt={alt}
       className={combinedClassName}
       loading="lazy"
