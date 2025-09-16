@@ -87,8 +87,8 @@ type PlatformLogo = (props: { className?: string }) => JSX.Element;
 const platforms: { id: Platform; name: string; logo: PlatformLogo; color: string }[] = [
   { id: 'ALL', name: 'ALL', logo: (props) => <Globe {...props} />, color: 'brand' },
   { id: 'REDDIT', name: 'Reddit', logo: RedditLogo, color: 'reddit' },
-  { id: 'TWITTER', name: 'Twitter/X', logo: TwitterLogo, color: 'twitter' },
   { id: 'FACEBOOK', name: 'Facebook', logo: FacebookLogo, color: 'facebook' },
+  { id: 'TWITTER', name: 'Twitter/X', logo: TwitterLogo, color: 'twitter' },
   { id: 'LINKEDIN', name: 'LinkedIn', logo: LinkedInLogo, color: 'linkedin' }
 ];
 
