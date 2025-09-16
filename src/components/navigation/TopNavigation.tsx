@@ -19,32 +19,45 @@ interface LogoImageProps {
 
 // Platform logo components (normalized sizing and aspect)
 const LogoImage = ({ src, alt, className }: LogoImageProps) => {
-  const { processImage } = useBackgroundRemoval();
+  const { processImage, isProcessing } = useBackgroundRemoval();
   const [processedSrc, setProcessedSrc] = useState(src);
+  const [isLoading, setIsLoading] = useState(true);
   const combinedClassName = className ? `object-contain ${className}` : 'object-contain';
 
   useEffect(() => {
     const processLogo = async () => {
+      setIsLoading(true);
       try {
+        console.log(`Processing background removal for ${alt} logo...`);
         const processed = await processImage(src);
         setProcessedSrc(processed);
+        console.log(`Background removal completed for ${alt} logo`);
       } catch (error) {
-        console.error('Failed to process logo:', error);
+        console.error(`Failed to process ${alt} logo:`, error);
         setProcessedSrc(src);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     processLogo();
-  }, [src, processImage]);
+  }, [src, processImage, alt]);
 
   return (
-    <img
-      src={processedSrc}
-      alt={alt}
-      className={combinedClassName}
-      loading="lazy"
-      decoding="async"
-    />
+    <div className="relative">
+      <img
+        src={processedSrc}
+        alt={alt}
+        className={`${combinedClassName} ${isLoading || isProcessing ? 'opacity-70' : 'opacity-100'} transition-opacity duration-300`}
+        loading="lazy"
+        decoding="async"
+      />
+      {(isLoading || isProcessing) && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+    </div>
   );
 };
 
