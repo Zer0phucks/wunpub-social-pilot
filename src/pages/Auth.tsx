@@ -131,7 +131,6 @@ const Auth = () => {
             {isSignUp ? "Create your account" : "Welcome back"}
           </p>
         </div>
-        
         <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6 shadow-elegant">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
