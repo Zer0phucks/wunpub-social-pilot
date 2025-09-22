@@ -8,6 +8,8 @@ import linkedinLogo from '@/assets/linkedin-logo.png';
 import facebookLogo from '@/assets/facebook-logo.png';
 import { useSupabase } from '@/integrations/supabase/SupabaseProvider';
 import { useNavigate } from 'react-router-dom';
+import { useBackgroundRemoval } from '@/hooks/useBackgroundRemoval';
+import { useEffect, useState } from 'react';
 
 interface LogoImageProps {
   src: string;
@@ -56,8 +58,8 @@ type PlatformLogo = (props: { className?: string }) => JSX.Element;
 const platforms: { id: Platform; name: string; logo: PlatformLogo; color: string }[] = [
   { id: 'ALL', name: 'ALL', logo: (props) => <Globe {...props} />, color: 'brand' },
   { id: 'REDDIT', name: 'Reddit', logo: RedditLogo, color: 'reddit' },
-  { id: 'TWITTER', name: 'Twitter/X', logo: TwitterLogo, color: 'twitter' },
   { id: 'FACEBOOK', name: 'Facebook', logo: FacebookLogo, color: 'facebook' },
+  { id: 'TWITTER', name: 'Twitter/X', logo: TwitterLogo, color: 'twitter' },
   { id: 'LINKEDIN', name: 'LinkedIn', logo: LinkedInLogo, color: 'linkedin' }
 ];
 
@@ -92,7 +94,7 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
                   size="sm"
                   onClick={() => onPlatformChange(platform.id)}
                   className={`
-                    flex items-center justify-center w-12 h-12 md:w-14 md:h-14 transition-all duration-200
+                    flex items-center justify-center w-24 h-24 md:w-28 md:h-28 transition-all duration-200
                     ${selectedPlatform === platform.id 
                       ? 'bg-brand text-brand-foreground shadow-wun-brand' 
                       : 'hover:bg-surface-2 text-muted-foreground hover:text-foreground'
@@ -101,7 +103,7 @@ export function TopNavigation({ selectedPlatform, onPlatformChange }: TopNavigat
                   aria-label={`Select ${platform.name}`}
                 >
                   {/* Icon container keeps consistent sizing */}
-                  <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12">
+                  <div className="flex items-center justify-center w-20 h-20 md:w-24 md:h-24">
                     <Logo className="w-full h-full" />
                   </div>
                 </Button>
