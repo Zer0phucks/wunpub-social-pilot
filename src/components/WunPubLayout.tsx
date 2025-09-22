@@ -4,6 +4,7 @@ import { TopNavigation } from './navigation/TopNavigation';
 import { SideNavigation } from './navigation/SideNavigation';
 import { ProjectSetup } from './onboarding/ProjectSetup';
 import { ProjectSelector } from './projects/ProjectSelector';
+import { Footer } from './Footer';
 import { useUser } from '@/hooks/useUser';
 import { useProjects } from '@/hooks/useProjects';
 
@@ -86,44 +87,47 @@ export function WunPubLayout({ children }: WunPubLayoutProps) {
   // Show project selector if no project is selected
   if (!selectedProjectId) {
     return (
-      <div className="min-h-screen bg-background">
-        <TopNavigation 
+      <div className="min-h-screen bg-background flex flex-col">
+        <TopNavigation
           selectedPlatform={selectedPlatform}
           onPlatformChange={setSelectedPlatform}
         />
-        <div className="p-6">
+        <div className="flex-1 p-6">
           <ProjectSelector
             selectedProjectId={selectedProjectId}
             onProjectSelect={setSelectedProjectId}
             onCreateNew={() => setShowProjectSetup(true)}
           />
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <TopNavigation 
+    <div className="min-h-screen bg-background flex flex-col">
+      <TopNavigation
         selectedPlatform={selectedPlatform}
         onPlatformChange={setSelectedPlatform}
       />
-      
-      <div className="flex">
-        <SideNavigation 
+
+      <div className="flex flex-1">
+        <SideNavigation
           selectedPage={selectedPage}
           onPageChange={setSelectedPage}
           selectedPlatform={selectedPlatform}
         />
-        
+
         <main className="flex-1 p-6">
-          {React.cloneElement(children as React.ReactElement, { 
+          {React.cloneElement(children as React.ReactElement, {
             selectedPage,
             selectedPlatform,
-            selectedProjectId 
+            selectedProjectId
           })}
         </main>
       </div>
+
+      <Footer />
     </div>
   );
 }
